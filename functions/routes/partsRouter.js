@@ -10,7 +10,7 @@ router.post('/createpart', (req, res) => {
     db.collection('parts').add({
         name: part.name,
         processes: part.processes,
-        description: part.description,
+        //description: part.description,
         docs: []
     })
         .then(response => {
@@ -22,7 +22,7 @@ router.post('/createpart', (req, res) => {
                         return;
                     }
                     db.doc(newPartPath).update({
-                        docs: firebase.firestore.FieldValue.arrayUnion({id:  response.id, description: newDoc.description, url: response.url})
+                        docs: firebase.firestore.FieldValue.arrayUnion({id:  response.id})
                     })
                 })
             })

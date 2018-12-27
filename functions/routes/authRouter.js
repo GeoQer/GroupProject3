@@ -19,7 +19,7 @@ router.post('/login', (req, res) => {
             console.log(err);
             res.json({ err });
         })
-})
+});
 
 router.post('/logout', (req, res) => {
     auth.signOut()
@@ -28,6 +28,6 @@ router.post('/logout', (req, res) => {
         console.log(err);
         res.json({ err });
     })
-})
+});
 
 module.exports = router;
