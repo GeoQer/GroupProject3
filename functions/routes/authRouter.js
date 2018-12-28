@@ -7,7 +7,7 @@ const db = require('../resources/db');
 router.post('/create', (req, res) => {
     auth.createUserWithEmailAndPassword(req.body.email, req.body.password)
         .then(user => {
-            db.collection('employees').add({
+            db.collection('employees').doc(user.user.uid).set({
                 name: req.body.name,
                 isAdmin: false,
                 status: {
@@ -16,7 +16,7 @@ router.post('/create', (req, res) => {
                     isLoggedIn: false
                 }
             })
-            .then(doc => res.json({msg: `User ${req.body.name} added with id: ${doc.id}`}))
+            .then(doc => res.json({success: true, uid: user.user.uid}))
             .catch(err => {console.log(err); json.res({err})})
         })
         .catch(err => {
@@ -27,7 +27,7 @@ router.post('/create', (req, res) => {
 
 router.post('/login', (req, res) => {
     auth.signInWithEmailAndPassword(req.body.email, req.body.password)
-        .then(user => res.json(user))
+        .then(user => res.json())
         .catch(err => {
             console.log(err);
             res.json({ err });
