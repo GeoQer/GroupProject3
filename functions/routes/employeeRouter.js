@@ -19,11 +19,11 @@ router.get('/:id', (req, res) => {
             console.log(doc);
             res.json({
                 name: doc.name,
+                isAdmin: doc.isAdmin || false,
                 status: {
                     currentStation: doc.status.currentStation || "",
                     isActive: doc.status.isActive || false,
                     isLoggedIn: doc.status.isLoggedIn || false,
-                    isAdmin: doc.isAdmin || false
                 }
             });
         })
