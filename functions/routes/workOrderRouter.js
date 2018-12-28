@@ -6,7 +6,7 @@ router.get('/all', (req, res) => {
     db.collection('work-orders').get()
         .then(docs => {
             let arr = [];
-            docs.forEach(doc => arr.push(doc.data()));
+            docs.forEach(doc => arr.push({...doc.data(), id: doc.id}));
             res.json(arr);
         })
         .catch(err => res.json({ err }));
