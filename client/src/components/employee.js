@@ -5,49 +5,24 @@ import Grinding from "./workStations/pages/grinding";
 import Laser from "./workStations/pages/laser";
 import PressBrake from "./workStations/pages/pressBrake";
 import Programming from "./workStations/pages/programming";
-import TubeBlender from "./workStations/pages/tubeBlender";
+import TubeBender from "./workStations/pages/tubeBender";
 import Welding from "./workStations/pages/welding";
+import { Route } from 'react-router-dom';
 
-class Employee extends Component {
-  state = {
-    currentPage: "Home"
-  };
 
-  handlePageChange = page => {
-    this.setState({ currentPage: page });
-  };
-
-  renderPage = () => {
-    if (this.state.currentPage === "Home") {
-      return <div>Home</div>//<Home />;
-    } else if (this.state.currentPage === "ColdSaw") {
-      return <ColdSaw />;
-    } else if (this.state.currentPage === "Grinding") {
-      return <Grinding />;
-    } else if (this.state.currentPage === "Laser") {
-      return <Laser />;
-    } else if (this.state.currentPage === "PressBrake") {
-      return <PressBrake />;
-    } else if (this.state.currentPage === "Programming") {
-      return <Programming />;
-    } else if (this.state.currentPage === "TubeBlender") {
-      return <TubeBlender />;
-    } else if (this.state.currentPage === "Welding") {
-      return <Welding />;
-    } 
-  };
-
-  render() {
-    return (
-      <div>
-        <MenuBar
-          currentPage={this.state.currentPage}
-          handlePageChange={this.handlePageChange}
-        />
-        {this.renderPage()}
-      </div>
-    );
-  }
+function Employee(props) {
+  return (
+    <div>
+      <MenuBar />
+      <Route exact path={`${props.match.url}/programming`} component={Programming} />
+      <Route exact path={`${props.match.url}/coldsaw`} component={ColdSaw} />
+      <Route exact path={`${props.match.url}/grinding`} component={Grinding} />
+      <Route exact path={`${props.match.url}/laser`} component={Laser} />
+      <Route exact path={`${props.match.url}/pressbrake`} component={PressBrake} />
+      <Route exact path={`${props.match.url}/tubebender`} component={TubeBender} />
+      <Route exact path={`${props.match.url}/welding`} component={Welding} />
+    </div>
+  );
 }
 
 export default Employee;

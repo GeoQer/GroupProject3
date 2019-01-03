@@ -1,7 +1,15 @@
-import React, { Component } from "react";
+import React from "react";
 import Employee from "./components/employee";
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-const App = () => <Employee />
+const App = (props) => {
+    return(
+        <Router>
+            <div>
+                <Route path="/employee" component={Employee} />
+            </div>
+        </Router>
+    )
+}
 
 export default App;
