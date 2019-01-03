@@ -19,7 +19,7 @@ class Employee extends Component {
 
   renderPage = () => {
     if (this.state.currentPage === "Home") {
-      return <Home />;
+      return <div>Home</div>//<Home />;
     } else if (this.state.currentPage === "ColdSaw") {
       return <ColdSaw />;
     } else if (this.state.currentPage === "Grinding") {
