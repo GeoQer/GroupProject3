@@ -1,6 +1,5 @@
 import React from 'react';
 import { Navbar, MenuItem, NavItem, NavDropdown, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 
 const menuBar = props => (
     <Navbar inverse collapseOnSelect>

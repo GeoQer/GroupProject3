@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import MenuBar from "./workStations/menu-bar/index";
 import ColdSaw from "./workStations/pages/coldsaw";
 import Grinding from "./workStations/pages/grinding";
