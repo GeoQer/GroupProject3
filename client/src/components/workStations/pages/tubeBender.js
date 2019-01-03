@@ -1,6 +1,6 @@
 import React from "react";
 
-const TubeBlender = () => (
+const TubeBender = () => (
     <div className="container">
         <div className="row">
             <div className="col-sm-6">
@@ -17,4 +17,4 @@ const TubeBlender = () => (
     </div>
     );
         
-export default TubeBlender;
+export default TubeBender;
