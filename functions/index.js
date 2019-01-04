@@ -16,9 +16,11 @@ if (process.env.NODE_ENV === "production") {
 const authRouter = require('./routes/authRouter');
 const partsRouter = require('./routes/partsRouter');
 const employeeRouter = require('./routes/employeeRouter');
+const stationRouter = require('./routes/stationRouter');
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/parts', partsRouter);
 app.use('/api/v1/employees', employeeRouter);
+app.use('/api/v1/stations', stationRouter);
 
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "../client/build/index.html"));

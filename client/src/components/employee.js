@@ -8,21 +8,35 @@ import Programming from "./workStations/pages/programming";
 import TubeBender from "./workStations/pages/tubeBender";
 import Welding from "./workStations/pages/welding";
 import { Route } from 'react-router-dom';
+import Axios from 'axios';
 
 
-function Employee(props) {
-  return (
-    <div>
-      <MenuBar />
-      <Route exact path={`${props.match.url}/programming`} component={Programming} />
-      <Route exact path={`${props.match.url}/coldsaw`} component={ColdSaw} />
-      <Route exact path={`${props.match.url}/grinding`} component={Grinding} />
-      <Route exact path={`${props.match.url}/laser`} component={Laser} />
-      <Route exact path={`${props.match.url}/pressbrake`} component={PressBrake} />
-      <Route exact path={`${props.match.url}/tubebender`} component={TubeBender} />
-      <Route exact path={`${props.match.url}/welding`} component={Welding} />
-    </div>
-  );
+class Employee extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      stations: [],
+    }
+
+    Axios.get('/api/v1/stations/all')
+      .then(result => this.setState({stations: result.data}));
+
+  }
+
+  render(props) {
+    return (
+      <div>
+        <MenuBar stations={this.state.stations}/>
+        <Route exact path={`/employee/programming`} component={Programming} />
+        <Route exact path={`/employee/coldsaw`} component={ColdSaw} />
+        <Route exact path={`/employee/grinding`} component={Grinding} />
+        <Route exact path={`/employee/laser`} component={Laser} />
+        <Route exact path={`/employee/pressbrake`} component={PressBrake} />
+        <Route exact path={`/employee/tubebender`} component={TubeBender} />
+        <Route exact path={`/employee/welding`} component={Welding} />
+      </div>
+    );
+  }
 }
 
 export default Employee;
