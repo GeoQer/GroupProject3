@@ -16,17 +16,22 @@ class Employee extends React.Component {
     super(props);
     this.state = {
       stations: [],
+      workOrders: []
     }
 
     Axios.get('/api/v1/stations/all')
       .then(result => this.setState({stations: result.data}));
-
   }
 
-  render(props) {
+  handleStationSelect = (event) => {
+    // Axios.get(`/api/v1/workorders/active/${event.target.getAttribute('data-id)}`)
+    //   .then(result => this.setState({workOrders: result.data}));
+  }
+
+  render() {
     return (
       <div>
-        <MenuBar stations={this.state.stations}/>
+        <MenuBar stations={this.state.stations} handleStationSelect={this.handleStationSelect}/>
         <Route exact path={`/employee/programming`} component={Programming} />
         <Route exact path={`/employee/coldsaw`} component={ColdSaw} />
         <Route exact path={`/employee/grinding`} component={Grinding} />

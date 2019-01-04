@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navbar, MenuItem, NavItem, NavDropdown, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const menuBar = props => (
     <Navbar inverse collapseOnSelect>
@@ -14,7 +15,7 @@ const menuBar = props => (
                 <NavDropdown eventKey={1} title="Work Stations" id="basic-nav-dropdown">
                     {props.stations.map(station => {
                         return(
-                            <MenuItem key={station.id} href={`/employee/${station.link}`}>{station.name}</MenuItem>
+                            <MenuItem data-id={station.id} key={station.id} onClick={props.handleStationSelect}><Link data-id={station.id} to={`/employee/${station.link}`}>{station.name}</Link></MenuItem>
                         )
                     })}
                 </NavDropdown>
