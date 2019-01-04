@@ -22,6 +22,15 @@ router.get('/active', (req, res) => {
         .catch(err => res.json({ err }))
 })
 
+router.get('/active/:station', (req, res) => {
+    db.collection('work-orders').where('isComplete', '==', false).where('station', '==', req.params.station).get()
+    .then(docs => {
+        const arr = [];
+        docs.forEach(doc => arr.push({...doc.data(), id: doc.id}));
+        res.json(arr);
+    })
+})
+
 router.get('/complete', (req, res) => {
     db.collection('work-orders').where('isComplete', '==', true).get()
         .then(docs => {
