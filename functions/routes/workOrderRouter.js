@@ -23,7 +23,7 @@ router.get('/active', (req, res) => {
 })
 
 router.get('/active/:station', (req, res) => {
-    db.collection('work-orders').where('isComplete', '==', false).where('station', '==', req.params.station).get()
+    db.collection('work-orders').where('isComplete', '==', false).where('currentProcess', '==', req.params.station).get()
     .then(docs => {
         const arr = [];
         docs.forEach(doc => arr.push({...doc.data(), id: doc.id}));
