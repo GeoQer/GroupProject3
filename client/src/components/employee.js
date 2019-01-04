@@ -9,7 +9,7 @@ import MenuBar from "./workStations/menu-bar/index";
 // import Welding from "./workStations/pages/welding";
 // import { Route } from 'react-router-dom';
 import Axios from 'axios';
-import Card from '../components/Card';
+import WorkOrder from './WorkOrder';
 
 
 class Employee extends React.Component {
@@ -26,18 +26,49 @@ class Employee extends React.Component {
 
   handleStationSelect = (event) => {
     Axios.get(`/api/v1/workorders/active/${event.target.getAttribute('data-id')}`)
-      .then(result => this.setState({ workOrders: result.data }));
+      .then(result => {
+        const arr = [];
+        result.data.forEach(workOrder => arr.push({...workOrder, inProgress: false}));
+        this.setState({workOrders: arr});
+      });
+  }
+
+  handleJobStart = (event) => {
+    const id = event.target.value;
+    const arr = this.state.workOrders.slice(0);
+    arr.forEach(workOrder => {
+      if(workOrder.id === id){
+        workOrder.inProgress = true;
+      }
+      else{
+        workOrder.inProgress = false;
+      }
+    })
+    this.setState({workOrders: arr});
+  }
+
+  handleJobStop = (event) => {
+    const arr = this.state.workOrders.slice(0);
+    arr.forEach(workOrder => {
+        workOrder.inProgress = false;
+    });
+    this.setState({workOrders: arr});
   }
 
   render() {
     return (
       <div>
         <MenuBar stations={this.state.stations} handleStationSelect={this.handleStationSelect} />
-        {this.state.workOrders.map(workOrder => {
-          return (
-            <Card text={workOrder.text} title="this is a work order" />
-          )
-        })}
+        <div className="container">
+          {this.state.workOrders.map(workOrder => {
+              if(workOrder.inProgress){  
+               return <WorkOrder key={workOrder.id} id={workOrder.id} onToggle={this.handleJobStop} inProgress={workOrder.inProgress} text={workOrder.text} title="this is a work order" />
+              }
+              else{
+                return <WorkOrder key={workOrder.id} id={workOrder.id} onToggle={this.handleJobStart} inProgress={workOrder.inProgress} text={workOrder.text} title="this is a work order" />
+              }
+          })}
+        </div>
       </div>
     );
   }
