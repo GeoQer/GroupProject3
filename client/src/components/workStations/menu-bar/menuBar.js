@@ -12,13 +12,11 @@ const menuBar = props => (
         <Navbar.Collapse>
             <Nav>
                 <NavDropdown eventKey={1} title="Work Stations" id="basic-nav-dropdown">
-                    <MenuItem eventKey={1.1} href="/employee/programming">Programming</MenuItem>
-                    <MenuItem eventKey={1.2} href="/employee/laser">Laser</MenuItem>
-                    <MenuItem eventKey={1.3} href="/employee/coldSaw">Cold Saw</MenuItem>
-                    <MenuItem eventKey={1.4} href="/employee/pressBrake">Press Brake</MenuItem>
-                    <MenuItem eventKey={1.5} href="/employee/tubebender">Tube Bender</MenuItem>
-                    <MenuItem eventKey={1.6} href="/employee/welding">Welding</MenuItem>
-                    <MenuItem eventKey={1.7} href="/employee/grinding">Grinding</MenuItem>
+                    {props.stations.map(station => {
+                        return(
+                            <MenuItem data-id={station.id} key={station.id} onClick={props.handleStationSelect}>{station.name}</MenuItem>
+                        )
+                    })}
                 </NavDropdown>
             </Nav>
             <Nav pullRight>

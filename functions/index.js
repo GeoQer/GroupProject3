@@ -16,10 +16,12 @@ if (process.env.NODE_ENV === "production") {
 const authRouter = require('./routes/authRouter');
 const partsRouter = require('./routes/partsRouter');
 const employeeRouter = require('./routes/employeeRouter');
+const stationRouter = require('./routes/stationRouter');
 const workOrderRouter = require('./routes/workOrderRouter');
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/parts', partsRouter);
 app.use('/api/v1/employees', employeeRouter);
+app.use('/api/v1/stations', stationRouter);
 app.use('/api/v1/workorders', workOrderRouter);
 
 app.get("*", (req, res) => {
