@@ -5,7 +5,7 @@ const menuBar = props => (
     <Navbar inverse collapseOnSelect>
         <Navbar.Header>
             <Navbar.Brand>
-                <a href="#brand">Workstations</a>
+                <a href="#brand">Employee Name</a>
             </Navbar.Brand>
             <Navbar.Toggle />
         </Navbar.Header>
