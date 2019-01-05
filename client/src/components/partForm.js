@@ -1,14 +1,15 @@
 import React from 'react';
 import Axios from 'axios';
-import { Modal, FormGroup, FormControl, ControlLabel, FieldGroup } from 'react-bootstrap';
+import { Modal, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 
 const Process = props => (
-    <FormGroup>
-        <ControlLabel>{props.name}</ControlLabel>
-        <FormControl
-            type="file"
-        />
-    </FormGroup>
+    <div>
+        <div className="input-group">
+            <label>{props.name}</label>
+            <input key={props.id} type="file" className="form-control" multiple/>
+        </div>
+        <br />
+    </div>
 );
 
 const Phase = props => (
@@ -17,7 +18,7 @@ const Phase = props => (
             <h3 className="panel-title">{props.title}</h3>
         </div>
         <div className="panel-body">
-            {props.stations.map(station => <Process id={station.id} name={station.name} /> )}
+            {props.stations.map(station => <Process id={station.id} name={station.name} />)}
             <button data-id={props.id} className="btn btn-success" onClick={props.showModal}>Add Process</button>
         </div>
     </div>
@@ -29,6 +30,10 @@ class PartForm extends React.Component {
         this.state = {
             numberOfPhases: 1,
             selectedPhase: 0,
+            selectedStation: {
+                id: '',
+                name: ''
+            },
             showModal: false,
             phases: [
                 {
@@ -42,7 +47,7 @@ class PartForm extends React.Component {
         Axios.get('/api/v1/stations/all')
             .then(result => this.setState({ stations: result.data }));
     }
-    
+
     showModal = (event) => {
         const selectedPhase = parseInt(event.target.getAttribute('data-id'));
         this.setState({ showModal: true, selectedPhase });
@@ -65,21 +70,21 @@ class PartForm extends React.Component {
                 phase.processes.push({ id: this.state.selectedStation.id, name: this.state.selectedStation.name });
             }
         })
-        this.setState({phases: arr, showModal: false});
+        this.setState({ phases: arr, showModal: false });
     }
 
     addPhase = () => {
         const arr = this.state.phases.slice(0);
         const newNumberOfPhases = this.state.numberOfPhases + 1;
-        arr.push({id: newNumberOfPhases, processes: []});
-        this.setState({phases: arr, numberOfPhases: newNumberOfPhases});
+        arr.push({ id: newNumberOfPhases, processes: [] });
+        this.setState({ phases: arr, numberOfPhases: newNumberOfPhases });
     }
 
     render() {
         return (
             <div className='container'>
                 {this.state.phases.map(phase => {
-                    return <Phase id={phase.id} key={phase.id} title={`Phase ${phase.id}`} processes={phase.processes} showModal={this.showModal} stations={phase.processes}/>
+                    return <Phase key={phase.id} id={phase.id} key={phase.id} title={`Phase ${phase.id}`} processes={phase.processes} showModal={this.showModal} stations={phase.processes} />
                 })}
                 <div>
                     <button className="btn btn-primary" onClick={this.addPhase}>Add Phase</button>
