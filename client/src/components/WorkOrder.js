@@ -1,8 +1,9 @@
 import React from 'react';
+import "./WorkOrder.css";
 
 const WorkOrder = (props) => (
     <div className="col-sm-6 col-md-4">
-        <div className="thumbnail">
+        <div className="thumbnail card" >
             <div className="caption">
                 <h5 className="card-title">{props.title}</h5>
                 <p className="card-text">{props.text}</p>
