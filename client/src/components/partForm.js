@@ -42,13 +42,7 @@ class PartForm extends React.Component {
         Axios.get('/api/v1/stations/all')
             .then(result => this.setState({ stations: result.data }));
     }
-
-    handleChange = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        console.log('You haven\'t set this up yet');
-    }
-
+    
     showModal = (event) => {
         const selectedPhase = parseInt(event.target.getAttribute('data-id'));
         this.setState({ showModal: true, selectedPhase });
@@ -68,7 +62,6 @@ class PartForm extends React.Component {
         let arr = this.state.phases.slice(0);
         arr.forEach(phase => {
             if (phase.id === this.state.selectedPhase) {
-                console.log('HERE');
                 phase.processes.push({ id: this.state.selectedStation.id, name: this.state.selectedStation.name });
             }
         })
@@ -79,7 +72,7 @@ class PartForm extends React.Component {
         const arr = this.state.phases.slice(0);
         const newNumberOfPhases = this.state.numberOfPhases + 1;
         arr.push({id: newNumberOfPhases, processes: []});
-        this.setState({phases: arr, numberOfPhases: newNumberOfPhases}, () => console.log(this.state));
+        this.setState({phases: arr, numberOfPhases: newNumberOfPhases});
     }
 
     render() {
