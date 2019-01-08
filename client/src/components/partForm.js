@@ -1,26 +1,11 @@
 import React from 'react';
 import Axios from 'axios';
-import { Modal, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
+import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 
-const Process = props => (
+const Station = props => (
     <div>
-        <div className="input-group">
-            <label>{props.name}</label>
-            <input key={props.id} type="file" className="form-control" multiple/>
-        </div>
-        <br />
-    </div>
-);
-
-const Phase = props => (
-    <div className="panel panel-primary">
-        <div className="panel-heading">
-            <h3 className="panel-title">{props.title}</h3>
-        </div>
-        <div className="panel-body">
-            {props.stations.map(station => <Process id={station.id} name={station.name} />)}
-            <button data-id={props.id} className="btn btn-success" onClick={props.showModal}>Add Process</button>
-        </div>
+        <h2><span className="label label-primary" style={{ float: "left", marginRight: "7px" }}>{props.stationName}</span></h2>
+        <button data-id={props.id} className="btn btn-danger" onClick={props.removeStation}>x</button>
     </div>
 )
 
@@ -28,34 +13,34 @@ class PartForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            numberOfPhases: 1,
-            selectedPhase: 0,
-            selectedStation: {
+            stations: [],
+            part: {
                 id: '',
-                name: ''
+                stations: []
             },
-            showModal: false,
-            phases: [
-                {
-                    id: 1,
-                    processes: []
-                }
-            ],
-            stations: []
-        };
-
+            showModal: false
+        }
         Axios.get('/api/v1/stations/all')
-            .then(result => this.setState({ stations: result.data }));
-    }
+            .then(result => this.setState({stations: result.data}));
+    };
 
-    showModal = (event) => {
-        const selectedPhase = parseInt(event.target.getAttribute('data-id'));
-        this.setState({ showModal: true, selectedPhase });
-    }
+    removeStation = event => {
+        event.preventDefault();
+        const id = event.target.getAttribute('data-id');
+        const obj = Object.assign(this.state.part);
+        const arr = this.state.part.stations.slice(0);
+        arr.forEach((station, index) => {
+            if (station.id === id) {
+                arr.splice(index, 1);
+            }
+        })
+        obj.stations = arr;
+        this.setState({ part: obj });
+    };
 
-    hideModal = () => {
-        this.setState({ showModal: false, selectedPhase: 0 });
-    }
+    showModal = () => this.setState({showModal: true})
+
+    hideModal = () => this.setState({showModal: false});
 
     handleSelectChange = (event) => {
         const id = event.target.value;
@@ -63,31 +48,29 @@ class PartForm extends React.Component {
         this.setState({ selectedStation: { id, name } });
     }
 
-    addProcess = () => {
-        let arr = this.state.phases.slice(0);
-        arr.forEach(phase => {
-            if (phase.id === this.state.selectedPhase) {
-                phase.processes.push({ id: this.state.selectedStation.id, name: this.state.selectedStation.name });
-            }
-        })
-        this.setState({ phases: arr, showModal: false });
-    }
-
-    addPhase = () => {
-        const arr = this.state.phases.slice(0);
-        const newNumberOfPhases = this.state.numberOfPhases + 1;
-        arr.push({ id: newNumberOfPhases, processes: [] });
-        this.setState({ phases: arr, numberOfPhases: newNumberOfPhases });
+    addStation = () => {
+        const obj = Object.assign(this.state.part);
+        obj.stations.push(this.state.selectedStation);
+        this.setState({part: obj, showModal: false, selectedStation: this.state.stations[0]});
     }
 
     render() {
         return (
-            <div className='container'>
-                {this.state.phases.map(phase => {
-                    return <Phase key={phase.id} id={phase.id} key={phase.id} title={`Phase ${phase.id}`} processes={phase.processes} showModal={this.showModal} stations={phase.processes} />
-                })}
-                <div>
-                    <button className="btn btn-primary" onClick={this.addPhase}>Add Phase</button>
+            <div className="container">
+                <form>
+                    <div className="input-group">
+                        <span className="input-group-addon" id="part-number-addon">Part ID</span>
+                        <input name="partID" type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
+                    </div>
+                    {this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />)}
+                </form>
+                <br />
+                <button className="btn btn-success" onClick={this.showModal}>Add Station</button>
+                <br />
+                <hr />
+                <div className="row">
+                    <button className="btn btn-success">Submit</button>
+                    <button className="btn btn-danger">Clear</button>
                 </div>
                 <Modal show={this.state.showModal}>
                     <Modal.Title>Select a Station</Modal.Title>
@@ -98,13 +81,14 @@ class PartForm extends React.Component {
                         </FormControl>
                     </FormGroup>
                     <FormGroup>
-                        <button className="btn btn-success" onClick={this.addProcess}>OK</button>
+                        <button className="btn btn-success" onClick={this.addStation}>OK</button>
                         <button className="btn btn-danger" onClick={this.hideModal}>Cancel</button>
                     </FormGroup>
                 </Modal>
             </div>
-        );
-    }
+        )
+    }                           
 }
+
 
 export default PartForm;
