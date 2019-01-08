@@ -54,13 +54,32 @@ class PartForm extends React.Component {
         this.setState({part: obj, showModal: false, selectedStation: this.state.stations[0]});
     }
 
+    handlePartIdInput = (event) => {
+        let obj = Object.assign(this.state.part);
+        obj.id = event.target.value;
+        this.setState({part: obj}); 
+    }
+
+    clear = () => {
+        document.getElementById('part-id').value = '';
+        this.setState({part: {id: '', stations: []}});
+    }
+
+    handleSubmit = () => {
+        console.log('submitting');
+        Axios.post('/api/v1/parts/create', {
+            part: this.state.part
+        })
+        .then(response => console.log(response));
+    }
+
     render() {
         return (
             <div className="container">
                 <form>
                     <div className="input-group">
                         <span className="input-group-addon" id="part-number-addon">Part ID</span>
-                        <input name="partID" type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
+                        <input id="part-id" onChange={this.handlePartIdInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
                     </div>
                     {this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />)}
                 </form>
@@ -69,8 +88,8 @@ class PartForm extends React.Component {
                 <br />
                 <hr />
                 <div className="row">
-                    <button className="btn btn-success">Submit</button>
-                    <button className="btn btn-danger">Clear</button>
+                    <button className="btn btn-success" onClick={this.handleSubmit}>Submit</button>
+                    <button className="btn btn-danger" onClick={this.clear}>Clear</button>
                 </div>
                 <Modal show={this.state.showModal}>
                     <Modal.Title>Select a Station</Modal.Title>
