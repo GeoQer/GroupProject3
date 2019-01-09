@@ -1,7 +1,8 @@
 import React from 'react';
 import Axios from 'axios';
 import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
-const firebase = require('firebase');
+const firebase = require('firebase/app');
+require('firebase/storage');
 var config = {
     apiKey: "AIzaSyAZB-qbjpKVRvaQt17kPsPTMav3O12by6k",
     authDomain: "project-runner-f1bdc.firebaseapp.com",
@@ -86,18 +87,6 @@ class PartForm extends React.Component {
             reader.onloadend = (e) => {
                 const blob = new Blob([e.target.result], { type: file.type });
 
-                // firebase.storage().ref('/' + ).put(blob)
-                // .then(result => {
-                //     firebase.storage().ref('/' + result.metadata.fullPath).getDownloadURL()
-                //         .then(result => {
-                //             axios.post('/api/v1/parts/create', {
-                //                 part: this.state.part,
-                //                 fileURL: result
-                //             })
-                //             .then(response => console.log(response));
-                //         })
-                // })
-
                 Axios.post('/api/v1/parts/create', {
                     part: {...this.state.part, filename: file.name}
                 })
@@ -110,7 +99,10 @@ class PartForm extends React.Component {
             reader.readAsArrayBuffer(file);
         }
         else{
-            console.log('Well damn!');
+            Axios.post('/api/v1/parts/create', {
+                part: {...this.state.part, filename: 'no file'}
+            })
+            .catch(err => console.log(err));
         }
     }
 
