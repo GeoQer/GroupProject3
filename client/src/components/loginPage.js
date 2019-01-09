@@ -1,6 +1,6 @@
 import React from 'react';
 import Login from './workStations/pages/login';
-import SignUp from './workStations/pages/signup';
+//import SignUp from './workStations/pages/signup';
 import './loginPage.css';
 
 class LoginPage extends React.Component {
