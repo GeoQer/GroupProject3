@@ -1,6 +1,17 @@
 import React from 'react';
 import Axios from 'axios';
 import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
+const firebase = require('firebase/app');
+require('firebase/storage');
+var config = {
+    apiKey: "AIzaSyAZB-qbjpKVRvaQt17kPsPTMav3O12by6k",
+    authDomain: "project-runner-f1bdc.firebaseapp.com",
+    databaseURL: "https://project-runner-f1bdc.firebaseio.com",
+    projectId: "project-runner-f1bdc",
+    storageBucket: "project-runner-f1bdc.appspot.com",
+    messagingSenderId: "757776283780"
+};
+firebase.initializeApp(config);
 
 const Station = props => (
     <div>
@@ -13,15 +24,17 @@ class PartForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            selectedStation: {},
             stations: [],
             part: {
                 id: '',
+                doc: '',
                 stations: []
             },
             showModal: false
         }
         Axios.get('/api/v1/stations/all')
-            .then(result => this.setState({stations: result.data}));
+            .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
     };
 
     removeStation = event => {
@@ -38,9 +51,9 @@ class PartForm extends React.Component {
         this.setState({ part: obj });
     };
 
-    showModal = () => this.setState({showModal: true})
+    showModal = () => this.setState({ showModal: true })
 
-    hideModal = () => this.setState({showModal: false});
+    hideModal = () => this.setState({ showModal: false });
 
     handleSelectChange = (event) => {
         const id = event.target.value;
@@ -51,35 +64,58 @@ class PartForm extends React.Component {
     addStation = () => {
         const obj = Object.assign(this.state.part);
         obj.stations.push(this.state.selectedStation);
-        this.setState({part: obj, showModal: false, selectedStation: this.state.stations[0]});
+        this.setState({ part: obj, showModal: false, selectedStation: this.state.stations[0] });
     }
 
-    handlePartIdInput = (event) => {
+    handleInput = (event) => {
+        const name = event.target.name;
         let obj = Object.assign(this.state.part);
-        obj.id = event.target.value;
-        this.setState({part: obj}); 
+        obj[name] = event.target.value;
+        this.setState({ part: obj });
     }
 
     clear = () => {
         document.getElementById('part-id').value = '';
-        this.setState({part: {id: '', stations: []}});
+        this.setState({ part: { id: '', stations: [] } });
     }
 
-    handleSubmit = () => {
-        console.log('submitting');
-        Axios.post('/api/v1/parts/create', {
-            part: this.state.part
-        })
-        .then(response => console.log(response));
+    handleSubmit = async () => {
+        const file = document.getElementById('attachment').files[0];
+
+        if (file !== undefined) {
+            var reader = new FileReader();
+            reader.onloadend = (e) => {
+                const blob = new Blob([e.target.result], { type: file.type });
+
+                Axios.post('/api/v1/parts/create', {
+                    part: {...this.state.part, filename: file.name}
+                })
+                .then(response => {
+                    const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
+                    ref.put(blob)
+                        .then(() => console.log('success'), () => console.log('error'));
+                })
+            }
+            reader.readAsArrayBuffer(file);
+        }
+        else{
+            Axios.post('/api/v1/parts/create', {
+                part: {...this.state.part, filename: 'no file'}
+            })
+            .catch(err => console.log(err));
+        }
     }
 
     render() {
         return (
             <div className="container">
-                <form>
+                <form id="part-form" action="/api/v1/parts/test" method="POST">
                     <div className="input-group">
                         <span className="input-group-addon" id="part-number-addon">Part ID</span>
-                        <input id="part-id" onChange={this.handlePartIdInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
+                        <input name="id" id="part-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
+                    </div>
+                    <div className="input-group">
+                        <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="part-document-addon" />
                     </div>
                     {this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />)}
                 </form>
@@ -106,7 +142,7 @@ class PartForm extends React.Component {
                 </Modal>
             </div>
         )
-    }                           
+    }
 }
 
 
