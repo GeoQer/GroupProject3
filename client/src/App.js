@@ -2,8 +2,8 @@ import React from "react";
 import Employee from "./components/employee";
 import PartForm from "./components/partForm";
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import LoginPage from "./loginPage";
 import Admin from "./components/admin";
+import LoginPage from "./components/loginPage";
 
 const App = (props) => {
     return(
