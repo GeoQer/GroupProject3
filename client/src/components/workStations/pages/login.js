@@ -40,7 +40,6 @@ class Login extends React.Component {
             password: this.state.password
         })
         .then(result => {
-            console.log(result.data);
             if(result.data.err){
                 this.setState({err: result.data.err});
                 return;
