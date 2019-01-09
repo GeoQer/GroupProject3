@@ -8,9 +8,6 @@ class LoginPage extends React.Component {
         return (
             <div className='container'>
                 <div className='row'>
-                    <div className='col-sm-9'>
-                        <SignUp />
-                    </div>
                     <div className='col-sm-3'>
                         <Login />
                     </div>

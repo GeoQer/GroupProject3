@@ -1,8 +1,6 @@
 import React from 'react';
 
 const SignUp = (props) => (
-    
-        
             <form>
                 <div>
                     <h2>Create a New Account</h2>

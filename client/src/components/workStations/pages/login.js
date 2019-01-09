@@ -1,9 +1,8 @@
 import React from 'react';
-const Login = (props) => (
-    
-        
-            
-                <form>
+import "./login.css";
+const Login = (props) => (   
+    <div className='form-align'>
+                <form className='loginForm'>
                     <div>
                         <h3>Sign In</h3>
                     </div>
@@ -21,8 +20,6 @@ const Login = (props) => (
                     </div>
                     <button type='Submit' className='btn btn-primary'>Submit</button>
                 </form>
-            
-        
-    
+                </div> 
 );
 export default Login;
