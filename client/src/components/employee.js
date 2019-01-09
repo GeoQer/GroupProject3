@@ -1,15 +1,8 @@
 import React from "react";
 import MenuBar from "./workStations/menu-bar/index";
-// import ColdSaw from "./workStations/pages/coldsaw";
-// import Grinding from "./workStations/pages/grinding";
-// import Laser from "./workStations/pages/laser";
-// import PressBrake from "./workStations/pages/pressBrake";
-// import Programming from "./workStations/pages/programming";
-// import TubeBender from "./workStations/pages/tubeBender";
-// import Welding from "./workStations/pages/welding";
-// import { Route } from 'react-router-dom';
 import Axios from 'axios';
 import WorkOrder from './WorkOrder';
+import { Link } from 'react-router-dom';
 
 
 class Employee extends React.Component {
@@ -55,7 +48,33 @@ class Employee extends React.Component {
     this.setState({workOrders: arr});
   }
 
+  componentWillMount() {
+    Axios.post('/api/v1/auth/verify', {
+      token: sessionStorage.getItem('token')
+    })
+      .then(result => {
+        if (result.data.uid === sessionStorage.getItem('uid')) {
+          this.setState({isLoggedIn: true})
+        }
+        else {
+          sessionStorage.clear();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
+
   render() {
+    if (!this.state.isLoggedIn) {
+      return (
+        <div>
+          <h1>You are not logged in</h1>
+          <Link to="/">login</Link>
+        </div>
+      )
+    }
+
     return (
       <div>
         <MenuBar stations={this.state.stations} handleStationSelect={this.handleStationSelect} />

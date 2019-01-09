@@ -2,6 +2,7 @@ import React from 'react';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import PartForm from '../../partForm';
+import Axios from 'axios';
 
 class AdminBar extends React.Component {
     constructor(props) {
@@ -17,6 +18,16 @@ class AdminBar extends React.Component {
         document.getElementById(ref).click();
     }
 
+    handleLogout = () => {
+        Axios.post('/api/v1/auth/logout')
+            .then(result => {
+                if(result.data.signedOut === true){
+                    sessionStorage.clear();
+                    window.location.replace('/');
+                }
+            });
+    }
+
     render = props => {
         return (
             <Router>
@@ -24,7 +35,7 @@ class AdminBar extends React.Component {
                     <Navbar inverse collapseOnSelect>
                         <Navbar.Header>
                             <Navbar.Brand>
-                                <a href="#" data-ref="admin" onClick={this.handleClick}>Admin Name</a>
+                                <a href="/" data-ref="admin" onClick={this.handleClick}>Admin Name</a>
                             </Navbar.Brand>
                             <Navbar.Toggle />
                         </Navbar.Header>
@@ -51,7 +62,7 @@ class AdminBar extends React.Component {
                             </Nav>
                             <Nav pullRight>
 
-                                <NavItem eventKey={2} href="#logout">
+                                <NavItem eventKey={2} data-ref="logout" onClick={this.handleLogout}>
                                     Logout
                 </NavItem>
                             </Nav>
@@ -62,6 +73,7 @@ class AdminBar extends React.Component {
                     <Link to="/admin/jobs" id="jobs" />
                     <Link to="/admin/employees" id="employees" />
                     <Link to="/admin" id="admin" />
+                    <Link to="/" id="logout" />
                     <Route exact path="/admin/parts" component={PartForm} />
                 </div>
             </Router>

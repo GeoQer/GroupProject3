@@ -51,6 +51,7 @@ class Login extends React.Component {
 
             sessionStorage.setItem('isAdmin', result.data.isAdmin);
             sessionStorage.setItem('uid', result.data.uid);
+            sessionStorage.setItem('token', result.data.token);
             this.setState({isAdmin: result.data.isAdmin});
         });
     }
@@ -62,8 +63,7 @@ class Login extends React.Component {
         else if(this.state.isAdmin === false){
             return <Redirect to="/employee" />
         }
-
-
+        
         return (
             <div className='form-align'>
                 <form className='loginForm'>

@@ -5,7 +5,7 @@ import Admin from "./components/admin";
 import LoginPage from "./components/loginPage";
 
 const App = (props) => {
-    return(
+    return (
         <Router>
             <div>
                 <Route exact path="/" component={LoginPage} />
