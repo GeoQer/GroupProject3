@@ -27,7 +27,7 @@ router.post('/create', (req, res) => {
 
 router.post('/login', (req, res) => {
     auth.signInWithEmailAndPassword(req.body.email, req.body.password)
-        .then(user => res.json())
+        .then(user => res.json({uid: user.user.uid}))
         .catch(err => {
             console.log(err);
             res.json({ err });

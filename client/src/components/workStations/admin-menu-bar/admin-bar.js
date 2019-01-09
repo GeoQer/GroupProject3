@@ -21,7 +21,7 @@ const AdminBar = props => (
                 </NavItem>
             </Nav>
             <Nav>
-                <NavItem eventKey={3} title="Parts">
+                <NavItem eventKey={3} title="Parts" href="/admin/createpart" >
                     Parts
                 </NavItem>
             </Nav>

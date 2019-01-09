@@ -10,9 +10,9 @@ const App = (props) => {
         <Router>
             <div>
                 <Route exact path="/" component={LoginPage} />
-                <Route exact path="/admin" component={Admin} />
+                <Route path="/admin" component={Admin} />
                 <Route exact path="/employee" component={Employee} />
-                <Route exact path="/admin/createpart" component={PartForm} />
+                <Route path="/admin/createpart" component={PartForm} />
             </div>
         </Router>
     )
