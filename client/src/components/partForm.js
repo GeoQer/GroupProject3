@@ -80,6 +80,12 @@ class PartForm extends React.Component {
     }
 
     handleSubmit = async () => {
+        if(this.state.part.stations.length < 1){
+            console.log('There is no information to post');
+            return;
+        }
+
+
         const file = document.getElementById('attachment').files[0];
 
         if (file !== undefined) {
