@@ -1,6 +1,7 @@
 import React from 'react';
 import "./login.css";
 import Axios from 'axios';
+import {Redirect} from 'react-router-dom';
 
 class Login extends React.Component {
     constructor(props){
@@ -27,7 +28,6 @@ class Login extends React.Component {
     }
 
     handleCheckBox = (event) =>{
-        const name = event.target.name;
         const value = event.target.checked;
         this.setState({rememberMe: value});
     }
@@ -40,6 +40,7 @@ class Login extends React.Component {
             password: this.state.password
         })
         .then(result => {
+            console.log(result.data);
             if(result.data.err){
                 this.setState({err: result.data.err});
                 return;
@@ -48,12 +49,22 @@ class Login extends React.Component {
                 localStorage.setItem('email', this.state.email);
             else
                 localStorage.removeItem('email');
-            
-                console.log(result.data);
+
+            sessionStorage.setItem('isAdmin', result.data.isAdmin);
+            sessionStorage.setItem('uid', result.data.uid);
+            this.setState({isAdmin: result.data.isAdmin});
         });
     }
 
     render(props) {
+        if(this.state.isAdmin === true){
+           return <Redirect to="/admin" />
+        }
+        else if(this.state.isAdmin === false){
+            return <Redirect to="/employee" />
+        }
+
+
         return (
             <div className='form-align'>
                 <form className='loginForm'>
