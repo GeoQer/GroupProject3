@@ -37,4 +37,18 @@ router.get('/part/:id', (req, res) => {
         })
 })
 
+router.get('/all', (req, res) => {
+    db.collection('parts').get()
+        .then(docs => {
+            const arr = [];
+            docs.forEach(doc => {
+                if(doc.data().id !== '')
+                    arr.push({...doc.data(), filepath: `${doc.id}/${doc.data().filename}`});
+                else
+                    arr.push({...doc.data(), id: doc.id, filepath: `${doc.id}/${doc.data().filename}`});
+            });
+            res.json(arr);
+        })
+})
+
 module.exports = router;
