@@ -3,15 +3,6 @@ import Axios from 'axios';
 import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 const firebase = require('firebase/app');
 require('firebase/storage');
-var config = {
-    apiKey: "AIzaSyAZB-qbjpKVRvaQt17kPsPTMav3O12by6k",
-    authDomain: "project-runner-f1bdc.firebaseapp.com",
-    databaseURL: "https://project-runner-f1bdc.firebaseio.com",
-    projectId: "project-runner-f1bdc",
-    storageBucket: "project-runner-f1bdc.appspot.com",
-    messagingSenderId: "757776283780"
-};
-firebase.initializeApp(config);
 
 const Station = props => (
     <div>
