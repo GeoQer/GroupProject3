@@ -48,7 +48,6 @@ class Admin extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     if (!(sessionStorage.getItem('isAdmin') === "true")) {
       return (
         <div className="container">
