@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import PartForm from '../../partForm';
+import PartPage from '../../partsPage';
 import Axios from 'axios';
 
 class AdminBar extends React.Component {
@@ -68,13 +68,13 @@ class AdminBar extends React.Component {
                             </Nav>
                         </Navbar.Collapse>
                     </Navbar>
-                    <Link to="/admin/parts" id="parts" />
+                    <Link to="/admin/parts/view" id="parts" />
                     <Link to="/admin/stations" id="stations" />
                     <Link to="/admin/jobs" id="jobs" />
                     <Link to="/admin/employees" id="employees" />
                     <Link to="/admin" id="admin" />
                     <Link to="/" id="logout" />
-                    <Route exact path="/admin/parts" component={PartForm} />
+                    <Route path="/admin/parts" component={PartPage} />
                 </div>
             </Router>
         );
