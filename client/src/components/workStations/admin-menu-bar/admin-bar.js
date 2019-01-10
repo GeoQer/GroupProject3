@@ -1,43 +1,83 @@
 import React from 'react';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import PartForm from '../../partForm';
+import Axios from 'axios';
 
-const AdminBar = props => (
-    <Navbar inverse collapseOnSelect>
-        <Navbar.Header>
-            <Navbar.Brand>
-                <a href="#brand">Admin Name</a>
-            </Navbar.Brand>
-            <Navbar.Toggle />
-        </Navbar.Header>
-        <Navbar.Collapse>
-            <Nav>
-                <NavItem eventKey={1} title="Work Stations">
-                    Work Stations
-                </NavItem>
-            </Nav>
-            <Nav>
-                <NavItem eventKey={2} title="Jobs">
-                    Jobs
-                </NavItem>
-            </Nav>
-            <Nav>
-                <NavItem eventKey={3} title="Parts" href="/admin/createpart" >
-                    Parts
-                </NavItem>
-            </Nav>
-            <Nav>
-                <NavItem eventKey={4} title="Employees">
-                    Employees
-                </NavItem>
-            </Nav>
-            <Nav pullRight>
-                
-                <NavItem eventKey={2} href="#logout">
-                    Logout
-                </NavItem>
-            </Nav>
-        </Navbar.Collapse>
-    </Navbar>
-);
+class AdminBar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            ref: null
+        }
+    }
 
+    handleClick = event => {
+        event.preventDefault();
+        const ref = event.target.getAttribute('data-ref');
+        document.getElementById(ref).click();
+    }
+
+    handleLogout = () => {
+        Axios.post('/api/v1/auth/logout')
+            .then(result => {
+                if(result.data.signedOut === true){
+                    sessionStorage.clear();
+                    window.location.replace('/');
+                }
+            });
+    }
+
+    render = props => {
+        return (
+            <Router>
+                <div>
+                    <Navbar inverse collapseOnSelect>
+                        <Navbar.Header>
+                            <Navbar.Brand>
+                                <a href="/" data-ref="admin" onClick={this.handleClick}>Admin Name</a>
+                            </Navbar.Brand>
+                            <Navbar.Toggle />
+                        </Navbar.Header>
+                        <Navbar.Collapse>
+                            <Nav>
+                                <NavItem eventKey={1} data-ref="stations" title="Work Stations" onClick={this.handleClick} >
+                                    Work Stations
+                </NavItem>
+                            </Nav>
+                            <Nav>
+                                <NavItem eventKey={2} data-ref="jobs" title="Jobs" onClick={this.handleClick} >
+                                    Jobs
+                </NavItem>
+                            </Nav>
+                            <Nav>
+                                <NavItem eventKey={3} title="Parts" data-ref="parts" onClick={this.handleClick} >
+                                    Parts
+                </NavItem>
+                            </Nav>
+                            <Nav>
+                                <NavItem eventKey={4} data-ref="employees" title="Employees" onClick={this.handleClick} >
+                                    Employees
+                </NavItem>
+                            </Nav>
+                            <Nav pullRight>
+
+                                <NavItem eventKey={2} data-ref="logout" onClick={this.handleLogout}>
+                                    Logout
+                </NavItem>
+                            </Nav>
+                        </Navbar.Collapse>
+                    </Navbar>
+                    <Link to="/admin/parts" id="parts" />
+                    <Link to="/admin/stations" id="stations" />
+                    <Link to="/admin/jobs" id="jobs" />
+                    <Link to="/admin/employees" id="employees" />
+                    <Link to="/admin" id="admin" />
+                    <Link to="/" id="logout" />
+                    <Route exact path="/admin/parts" component={PartForm} />
+                </div>
+            </Router>
+        );
+    }
+}
 export default AdminBar;

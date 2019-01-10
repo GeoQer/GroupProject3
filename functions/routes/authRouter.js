@@ -3,6 +3,7 @@ const router = express.Router();
 const firebase = require('../resources/firebase');
 const auth = firebase.auth();
 const db = require('../resources/db');
+const verify = require('../resources/admin').auth();
 
 router.post('/create', (req, res) => {
     auth.createUserWithEmailAndPassword(req.body.email, req.body.password)
@@ -30,7 +31,9 @@ router.post('/login', (req, res) => {
         .then(user => {
             db.collection('users').doc(user.user.uid).get()
             .then(doc => {
-                res.json({uid: user.user.uid, isAdmin: doc.data().isAdmin})
+                user.user.getIdToken().then(token => {
+                    res.json({uid: user.user.uid, isAdmin: doc.data().isAdmin, token})
+                })
             })
         })
         .catch(err => {
@@ -47,5 +50,16 @@ router.post('/logout', (req, res) => {
         res.json({ err });
     })
 });
+
+router.post('/verify', (req, res) => {
+    const token = req.body.token;
+    try{
+    verify.verifyIdToken(token)
+        .then(code => res.json(code))
+    }
+    catch(err){
+        res.json(err);
+    }
+})
 
 module.exports = router;
