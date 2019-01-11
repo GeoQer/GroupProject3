@@ -16,16 +16,23 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
-        <table>
-            <tbody>
-                {props.parts.map(part => (
-                    <tr key={part.id}>
-                        <td>{part.id}</td>
-                        <td><button className="btn btn-primary" data-filepath={part.filepath} onClick={props.viewAttachment}>View Attachment</button></td>
-                        <td><button className="btn btn-danger" onClick={() => alert('fart')}>Edit</button></td>
-                    </tr>))}
-            </tbody>
-        </table>
+        <div className="table-resonsive">
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th>Parts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {props.parts.map(part => (
+                        <tr key={part.id}>
+                            <td>{part.name}</td>
+                            <td><button className="btn btn-primary" data-filepath={part.filepath} onClick={props.viewAttachment}>View Attachment</button></td>
+                            <td><button className="btn btn-danger" onClick={() => alert('fart')}>Edit</button></td>
+                        </tr>))}
+                </tbody>
+            </table>
+        </div>
     </div>
 )
 
@@ -42,7 +49,7 @@ class PartPage extends React.Component {
 
     componentWillMount = () => {
         Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({ parts: result.data }));
+            .then(result => this.setState({ parts: result.data }, () => console.log(result.data)));
     }
 
     componentWillUpdate = () => {

@@ -2,16 +2,13 @@ const db = require('../resources/db');
 const express = require('express');
 const router = express.Router();
 
-router.post('/test', (req, res) => {
-    console.log(req.body.doc);
-    res.json({success: true});
-})
-
 router.post('/create', (req, res) => {
     const part = req.body.part;
+    console.log('PART: ', req.body.part);
 
     db.collection('parts').add({
         id: part.id || '',
+        name: part.name || '',
         stations: part.stations,
         filename: part.filename
     })

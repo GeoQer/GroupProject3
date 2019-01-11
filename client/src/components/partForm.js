@@ -19,6 +19,7 @@ class PartForm extends React.Component {
             stations: [],
             part: {
                 id: '',
+                name: '',
                 doc: '',
                 stations: []
             },
@@ -68,12 +69,14 @@ class PartForm extends React.Component {
     clear = () => {
         document.getElementById('part-id').value = '';
         document.getElementById('attachment').value = '';
+        document.getElementById('part-name').value = '';
         this.setState({ part: { id: '', stations: [] } });
     }
 
-    handleSubmit = async () => {
-        if(this.state.part.stations.length < 1){
-            console.log('There is no information to post');
+    handleSubmit = () => {
+        console.log('PART: ', this.state.part)
+        if (this.state.part.stations.length < 1) {
+            console.log('Please select a minimum of one station');
             return;
         }
 
@@ -84,25 +87,25 @@ class PartForm extends React.Component {
             var reader = new FileReader();
             reader.onloadend = (e) => {
                 const blob = new Blob([e.target.result], { type: file.type });
-
                 Axios.post('/api/v1/parts/create', {
-                    part: {...this.state.part, filename: file.name}
+                    part: { ...this.state.part, filename: file.name }
                 })
-                .then(response => {
-                    const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
-                    ref.put(blob)
-                        .then(() => console.log('success'), () => console.log('error'));
-                })
+                    .then(response => {
+                        this.clear();
+                        const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
+                        ref.put(blob)
+                            .then(() => console.log('success'), () => console.log('error'));
+                    })
             }
             reader.readAsArrayBuffer(file);
         }
-        else{
+        else {
             Axios.post('/api/v1/parts/create', {
-                part: {...this.state.part, filename: 'no file'}
+                part: { ...this.state.part, filename: 'no file' }
             })
-            .catch(err => console.log(err));
+                .then(response => this.clear())
+                .catch(err => console.log(err));
         }
-        this.clear();
     }
 
     render() {
@@ -112,6 +115,10 @@ class PartForm extends React.Component {
                     <div className="input-group">
                         <span className="input-group-addon" id="part-number-addon">Part ID</span>
                         <input name="id" id="part-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
+                    </div>
+                    <div className="input-group">
+                        <span className="input-group-addon" id="part-name-addon">Part Name</span>
+                        <input name="name" id="part-name" onChange={this.handleInput} type="text" className="form-control" />
                     </div>
                     <div className="input-group">
                         <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="part-document-addon" />
