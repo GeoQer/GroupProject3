@@ -67,6 +67,7 @@ class PartForm extends React.Component {
 
     clear = () => {
         document.getElementById('part-id').value = '';
+        document.getElementById('attachment').value = '';
         this.setState({ part: { id: '', stations: [] } });
     }
 
@@ -101,6 +102,7 @@ class PartForm extends React.Component {
             })
             .catch(err => console.log(err));
         }
+        this.clear();
     }
 
     render() {

@@ -16,22 +16,19 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
-        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment}/> )}
+        <table>
+            <tbody>
+                {props.parts.map(part => (
+                    <tr key={part.id}>
+                        <td>{part.id}</td>
+                        <td><button className="btn btn-primary" data-filepath={part.filepath} onClick={props.viewAttachment}>View Attachment</button></td>
+                        <td><button className="btn btn-danger" onClick={() => alert('fart')}>Edit</button></td>
+                    </tr>))}
+            </tbody>
+        </table>
     </div>
 )
 
-const PartCard = props => (
-   <div className="col-sm-6 col-md-4">
-        <div className="thumbnail" >
-            <div className="caption">
-                <h3 className="card-title">{props.title}</h3>
-                <p><strong>Stations: </strong></p>
-                {props.stations.map(station => <p key={station.id}>{station.name}</p>)}
-                <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
-            </div>
-        </div>
-    </div>
-);
 
 class PartPage extends React.Component {
 
@@ -45,12 +42,12 @@ class PartPage extends React.Component {
 
     componentWillMount = () => {
         Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}));
+            .then(result => this.setState({ parts: result.data }));
     }
 
     componentWillUpdate = () => {
         Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}))
+            .then(result => this.setState({ parts: result.data }))
     }
 
     handleTabSelect = (event) => {
@@ -71,7 +68,6 @@ class PartPage extends React.Component {
         <div className="container">
             <ul className="nav nav-pills">
                 <li role="presentation" className="active tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/view">View</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/edit">Edit</Link></li>
                 <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/create">Create</Link></li>
             </ul>
             <br />
