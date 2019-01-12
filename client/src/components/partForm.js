@@ -1,6 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
+import "./partForm.css";
 const firebase = require('firebase/app');
 require('firebase/storage');
 
@@ -106,6 +107,8 @@ class PartForm extends React.Component {
     render() {
         return (
             <div className="container">
+                <div className='row'>
+                <div className='col-sm-4'>
                 <form id="part-form" action="/api/v1/parts/test" method="POST">
                     <div className="input-group">
                         <span className="input-group-addon" id="part-number-addon">Part ID</span>
@@ -120,10 +123,10 @@ class PartForm extends React.Component {
                 <button className="btn btn-success" onClick={this.showModal}>Add Station</button>
                 <br />
                 <hr />
-                <div className="row">
+                
                     <button className="btn btn-success" onClick={this.handleSubmit}>Submit</button>
                     <button className="btn btn-danger" onClick={this.clear}>Clear</button>
-                </div>
+                
                 <Modal show={this.state.showModal}>
                     <Modal.Title>Select a Station</Modal.Title>
                     <FormGroup>
@@ -137,6 +140,8 @@ class PartForm extends React.Component {
                         <button className="btn btn-danger" onClick={this.hideModal}>Cancel</button>
                     </FormGroup>
                 </Modal>
+                </div>
+                </div>
             </div>
         )
     }
