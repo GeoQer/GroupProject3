@@ -28,7 +28,7 @@ const ViewParts = props => (
                         <tr key={part.id}>
                             <td>{part.name}</td>
                             <td><button className="btn btn-primary" data-filepath={part.filepath} onClick={props.viewAttachment}>View Attachment</button></td>
-                            <td><button className="btn btn-danger" onClick={() => alert('fart')}>Edit</button></td>
+                            <td><button className="btn btn-danger" data-id={part.id} onClick={props.handleEdit}>Edit</button></td>
                         </tr>))}
                 </tbody>
             </table>
@@ -49,7 +49,7 @@ class PartPage extends React.Component {
 
     componentWillMount = () => {
         Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({ parts: result.data }, () => console.log(result.data)));
+            .then(result => this.setState({ parts: result.data }));
     }
 
     componentWillUpdate = () => {
@@ -71,16 +71,24 @@ class PartPage extends React.Component {
             .then(url => window.open(url, '_blank'));
     }
 
+    handleEdit = event => {
+        const id = event.target.getAttribute('data-id');
+        console.log("ID: ", id, this.state);
+        Axios.get(`/api/v1/parts/edit/${id}`)
+            .then(result => sessionStorage.setItem('editPart', JSON.stringify(result.data)));
+        document.getElementById('create-link').click();
+    }
+
     render = props => (
         <div className="container">
             <ul className="nav nav-pills">
                 <li role="presentation" className="active tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/view">View</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/create">Create</Link></li>
+                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link id="create-link" to="/admin/parts/create">Create</Link></li>
             </ul>
             <br />
             <br />
             <Route path="/admin/parts/create" component={PartForm} />
-            <Route path="/admin/parts/view" component={() => <ViewParts parts={this.state.parts} viewAttachment={this.viewAttachment} />} />
+            <Route path="/admin/parts/view" component={() => <ViewParts parts={this.state.parts} viewAttachment={this.viewAttachment} handleEdit={this.handleEdit} />} />
         </div>
     )
 }

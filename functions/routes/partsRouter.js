@@ -18,15 +18,15 @@ router.post('/create', (req, res) => {
         .catch(err => res.json({ err }))
 })
 
-router.get('/part/:id', (req, res) => {
-    let path = `test/${req.params.id}`;
+router.get('/edit/:id', (req, res) => {
+    let path = `parts/${req.params.id}`;
     db.doc(path).get()
         .then(doc => {
             if (!doc.exists) {
                 res.json({ exists: false });
             }
 
-            res.json(doc.data());
+            res.json({...doc.data(), id: doc.data().id ? doc.data().id : doc.id});
         })
         .catch(err => {
             console.log(err);

@@ -27,7 +27,25 @@ class PartForm extends React.Component {
         }
         Axios.get('/api/v1/stations/all')
             .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
-    };
+
+    }
+
+
+    componentDidMount = () => {
+        let editPart = sessionStorage.getItem('editPart');
+
+        if (editPart == null) {
+            editPart = JSON.parse(editPart);
+            this.setState({ part: editPart }, () => {
+                document.getElementById('part-id').value = this.state.part.id;
+                document.getElementById('part-name').value = this.state.part.name;
+            });
+        }
+
+        sessionStorage.setItem('editPart', null);
+
+    }
+
 
     removeStation = event => {
         event.preventDefault();
@@ -74,7 +92,6 @@ class PartForm extends React.Component {
     }
 
     handleSubmit = () => {
-        console.log('PART: ', this.state.part)
         if (this.state.part.stations.length < 1) {
             console.log('Please select a minimum of one station');
             return;
@@ -108,7 +125,7 @@ class PartForm extends React.Component {
         }
     }
 
-    render() {
+    render = () => {
         return (
             <div className="container">
                 <form id="part-form" action="/api/v1/parts/test" method="POST">
@@ -150,6 +167,7 @@ class PartForm extends React.Component {
         )
     }
 }
+
 
 
 export default PartForm;
