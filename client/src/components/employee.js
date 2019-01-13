@@ -3,6 +3,7 @@ import MenuBar from "./workStations/menu-bar/index";
 import Axios from 'axios';
 import WorkOrder from './WorkOrder';
 import { Link } from 'react-router-dom';
+import "./employee.css"; 
 
 
 class Employee extends React.Component {
@@ -86,8 +87,9 @@ class Employee extends React.Component {
     }
 
     return (
-      <div>
+      <div className='b'>     
         <MenuBar stations={this.state.stations} handleStationSelect={this.handleStationSelect} handleLogout={this.handleLogout} />
+       
         <div className="container">
           {this.state.workOrders.map(workOrder => {
             if (workOrder.inProgress) {
@@ -99,6 +101,7 @@ class Employee extends React.Component {
           })}
         </div>
       </div>
+    
     );
   }
 }

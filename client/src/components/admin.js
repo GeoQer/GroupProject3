@@ -3,6 +3,7 @@ import AdminBar from "./workStations/admin-menu-bar/index";
 import Axios from 'axios';
 import WorkOrder from './WorkOrder';
 import { Link } from 'react-router-dom';
+import "./admin.css"; 
 const firebase = require('firebase/app');
 require('firebase/auth');
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
