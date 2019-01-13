@@ -51,18 +51,22 @@ class Admin extends React.Component {
   render() {
     if (!(sessionStorage.getItem('isAdmin') === "true")) {
       return (
+      <div className='c'> 
         <div className="container">
           <h1>You are not an Admin</h1>
           <Link to="/employee">Go to Employee Page</Link>
         </div>
+      </div>
       )
     }
     else if (!this.state.isLoggedIn) {
       return (
+      <div className='d'>
         <div className="container">
           <h1>You are not logged in</h1>
           <Link to="/">login</Link>
         </div>
+      </div>
       )
     }
     else {
