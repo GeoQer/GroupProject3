@@ -47,10 +47,10 @@ class AdminEmployeePage extends React.Component {
             .then(result => this.setState({employees: result.data}));
     }
 
-    componentWillUpdate = () => {
-        Axios.get('/api/v1/employees/all')
-            .then(result => this.setState({employees: result.data}))
-    }
+    // componentWillUpdate = () => {
+    //     Axios.get('/api/v1/employees/all')
+    //         .then(result => this.setState({employees: result.data}))
+    // }
 
     handleTabSelect = (event) => {
         const target = event.target;
