@@ -4,19 +4,19 @@ import { Route, Link } from 'react-router-dom';
 import Axios from 'axios';
 const firebase = require('firebase/app');
 require('firebase/storage');
-var config = {
+ /* var config = {
     apiKey: "AIzaSyAZB-qbjpKVRvaQt17kPsPTMav3O12by6k",
     authDomain: "project-runner-f1bdc.firebaseapp.com",
     databaseURL: "https://project-runner-f1bdc.firebaseio.com",
     projectId: "project-runner-f1bdc",
     storageBucket: "project-runner-f1bdc.appspot.com",
     messagingSenderId: "757776283780"
-};
-firebase.initializeApp(config);
+}; */ 
+//firebase.initializeApp(config);
 
-const ViewEmployee = props => (
+const ViewEmployees  = props => (
     <div className="row">
-        {props.employee.map(part => <EmployeeCard key={employee.id} title={employee.name} email={employee.email}/> )}
+        {props.employees.map(employee => <EmployeeCard key={employee.id} title={employee.name} email={employee.email}/> )}
     </div>
 )
 
@@ -37,20 +37,20 @@ class AdminEmployeePage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        employees = []
+        employees: []
         }
 
     }
 
     componentWillMount = () => {
-        Axios.get('/api/v1/employees/all')
+        Axios.get('/api/v1/users/all')
             .then(result => this.setState({employees: result.data}));
     }
 
-    // componentWillUpdate = () => {
-    //     Axios.get('/api/v1/employees/all')
-    //         .then(result => this.setState({employees: result.data}))
-    // }
+    /*  componentWillUpdate = () => {
+         Axios.get('/api/v1/users/all')
+             .then(result => this.setState({employees: result.data}))
+     } */
 
     handleTabSelect = (event) => {
         const target = event.target;
@@ -70,7 +70,7 @@ class AdminEmployeePage extends React.Component {
             <br />
             <br />
             <Route path="/admin/employees/create" component={EmployeeForm} />
-            <Route path="/admin/employees/view" component={() => <ViewEmployee parts={this.state.employees} />} />
+            <Route path="/admin/employees/view" component={() => <ViewEmployees employees={this.state.employees} />} />
         </div>
     )
 }

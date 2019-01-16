@@ -1,9 +1,9 @@
 import React from 'react';
 import Axios from 'axios';
-import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
+//import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 import "./partForm.css";
-const firebase = require('firebase/app');
-require('firebase/storage');
+//const firebase = require('firebase/app');
+//require('firebase/storage');
 
 class EmployeeForm extends React.Component {
     constructor(props) {
@@ -45,35 +45,41 @@ class EmployeeForm extends React.Component {
         this.setState({ employee: { id: '' } });
     }
 
-    handleSubmit = async () => {
-        if (this.state.part.stations.length < 1) {
+     handleSubmit = async () => {
+        if (this.state.employee.length < 1) {
             console.log('There is no information to post');
             return;
         }
+        else{
+            Axios.post('/api/v1/users/create', {
+                employee: {...this.state.employee }
+            })
+            .catch(err => console.log(err));
+        }
 
-    }
+    } 
 
     render() {
         return (
             <div className="container">
                 <div className='row'>
                     <div className='col-sm-4'>
-                        <form id="employee-form" action="/api/v1/employee/test" method="POST">
+                        <form id="employee-form" action="/api/v1/users/test" method="POST">
                             <div className="input-group">
                                 <span className="input-group-addon" id="employee-number-addon">Employee ID</span>
                                 <input name="id" id="employee-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="employee-number-addon" />
                             </div>
                             <div className="input-group">
                                 <span className="input-group-addon" id="employee-name-addon">Employee Name</span>
-                                <input name="id" id="employee-id" onChange={this.handleInput} type="text" className="form-control" placeholder="First and Last Name" aria-describedby="part-name-addon" />
+                                <input name="name" id="employee-name" onChange={this.handleInput} type="text" className="form-control" placeholder="First and Last Name" aria-describedby="part-name-addon" />
                             </div>
                             <div className="input-group">
                                 <span className="input-group-addon" id="employee-email-addon">Employee Email</span>
-                                <input name="id" id="employee-id" onChange={this.handleInput} type="email" className="form-control" placeholder="Email" aria-describedby="part-email-addon" />
+                                <input name="email" id="employee-email" onChange={this.handleInput} type="email" className="form-control" placeholder="Email" aria-describedby="part-email-addon" />
                             </div>
                             <div className="input-group">
                                 <span className="input-group-addon" id="employee-password-addon">Employee Password</span>
-                                <input name="id" id="employee-id" onChange={this.handleInput} type="password" className="form-control" placeholder="Password" aria-describedby="part-password-addon" />
+                                <input name="password" id="employee-password" onChange={this.handleInput} type="password" className="form-control" placeholder="Password" aria-describedby="part-password-addon" />
                             </div>
                         </form>
                         <br />

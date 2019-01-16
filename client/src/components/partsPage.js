@@ -48,10 +48,10 @@ class PartPage extends React.Component {
             .then(result => this.setState({parts: result.data}));
     }
 
-    componentWillUpdate = () => {
+   /*  componentWillUpdate = () => {
         Axios.get('/api/v1/parts/all')
             .then(result => this.setState({parts: result.data}))
-    }
+    } */
 
     handleTabSelect = (event) => {
         const target = event.target;
