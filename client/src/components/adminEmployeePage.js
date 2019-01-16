@@ -49,6 +49,7 @@ class AdminEmployeePage extends React.Component {
             Axios.get('/api/v1/users/all')
             .then(result => this.setState({employees: result.data}))
         }, 15000);
+        this.setState({interval: x});    
     }
     componentWillUnmount = () => {
         clearInterval(this.state.interval);
