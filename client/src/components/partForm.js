@@ -25,7 +25,6 @@ class PartForm extends React.Component {
             },
             showModal: false
         }
-        console.count('CONSTRUCTOR');
         Axios.get('/api/v1/stations/all')
             .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
 
@@ -143,7 +142,7 @@ class PartForm extends React.Component {
                     <div className="input-group">
                         <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="part-document-addon" />
                     </div>
-                    {this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />)}
+                    {this.state.part.stations ? this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />): ''}
                 </form>
                 <br />
                 <button className="btn btn-success" onClick={this.showModal}>Add Station</button>

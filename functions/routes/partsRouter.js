@@ -4,18 +4,32 @@ const router = express.Router();
 
 router.post('/create', (req, res) => {
     const part = req.body.part;
-    console.log('PART: ', req.body.part);
-
-    db.collection('parts').add({
-        id: part.id || '',
-        name: part.name || '',
-        stations: part.stations,
-        filename: part.filename
-    })
-        .then(response => {
-            res.json({ newPartID: response.id })
+    if (part.id) {
+        db.collection(`parts`).doc(part.id).get()
+            .then(doc => {
+                if (doc.exists) {
+                    db.collection('parts').doc(part.id).set({
+                        name: part.name || '',
+                        stations: part.stations,
+                        filename: part.filename
+                    })
+                        .then(response => res.json({ existingPartID: part.id }))
+                }
+            })
+    }
+    else {
+        db.collection('parts').add({
+            id: part.id || '',
+            name: part.name || '',
+            stations: part.stations,
+            filename: part.filename
         })
-        .catch(err => res.json({ err }))
+            .then(response => {
+                res.json({ newPartID: response.id })
+            })
+            .catch(err => res.json({ err }))
+
+    }
 })
 
 router.get('/edit/:id', (req, res) => {
@@ -26,7 +40,7 @@ router.get('/edit/:id', (req, res) => {
                 res.json({ exists: false });
             }
 
-            res.json({...doc.data(), id: doc.data().id ? doc.data().id : doc.id});
+            res.json({ ...doc.data(), id: doc.data().id ? doc.data().id : doc.id });
         })
         .catch(err => {
             console.log(err);
@@ -39,10 +53,10 @@ router.get('/all', (req, res) => {
         .then(docs => {
             const arr = [];
             docs.forEach(doc => {
-                if(doc.data().id !== '')
-                    arr.push({...doc.data(), filepath: `${doc.id}/${doc.data().filename}`});
+                if (doc.data().id !== '')
+                    arr.push({ ...doc.data(), filepath: `${doc.id}/${doc.data().filename}` });
                 else
-                    arr.push({...doc.data(), id: doc.id, filepath: `${doc.id}/${doc.data().filename}`});
+                    arr.push({ ...doc.data(), id: doc.id, filepath: `${doc.id}/${doc.data().filename}` });
             });
             res.json(arr);
         })

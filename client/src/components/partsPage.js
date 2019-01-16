@@ -17,28 +17,6 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
-<<<<<<< HEAD
-        <div className="table-resonsive">
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Parts</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {props.parts.map(part => (
-                        <tr key={part.id}>
-                            <td>{part.name}</td>
-                            <td><button className="btn btn-primary" data-filepath={part.filepath} onClick={props.viewAttachment}>View Attachment</button></td>
-                            <td><button className="btn btn-danger" data-id={part.id} onClick={props.handleEdit}>Edit</button></td>
-                        </tr>))}
-                </tbody>
-            </table>
-        </div>
-    </div>
-)
-
-=======
         {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} />)}
     </div>
 )
@@ -55,7 +33,6 @@ const PartCard = props => (
         </div>
     </div>
 );
->>>>>>> 1e15c9fdedcfd596bcd3f16f6a7ce31224379910
 
 class PartPage extends React.Component {
 
@@ -70,14 +47,6 @@ class PartPage extends React.Component {
 
     componentDidMount = () => {
         Axios.get('/api/v1/parts/all')
-<<<<<<< HEAD
-            .then(result => this.setState({ parts: result.data }));
-    }
-
-    componentWillUpdate = () => {
-        Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({ parts: result.data }))
-=======
             .then(result => this.setState({parts: result.data}));
     
         let x = setInterval(() => {
@@ -89,7 +58,6 @@ class PartPage extends React.Component {
 
     componentWillUnmount = () => {
         clearInterval(this.state.interval);
->>>>>>> 1e15c9fdedcfd596bcd3f16f6a7ce31224379910
     }
 
     handleTabSelect = (event) => {
