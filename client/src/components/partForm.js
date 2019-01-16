@@ -24,28 +24,28 @@ class PartForm extends React.Component {
                 doc: '',
                 stations: []
             },
-            showModal: false
+            showModal: false,
+            loaded: false
         }
     }
 
     componentWillMount = () => {
         Axios.get('/api/v1/stations/all')
-        .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
+        .then(result => this.setState({ stations: result.data, selectedStation: result.data[0], loaded: true }));
     }
 
     componentDidMount = () => {
         let editPart = sessionStorage.getItem('editPart');
 
-        if (editPart !== "null") {
+        if (editPart !== "false" && editPart) {
             editPart = JSON.parse(editPart);
-            console.log(editPart);
             this.setState({ part: editPart }, () => {
                 document.getElementById('part-id').value = this.state.part.id;
                 document.getElementById('part-name').value = this.state.part.name;
             });
         }
 
-        sessionStorage.setItem('editPart', null);
+        sessionStorage.setItem('editPart', false);
 
     }
 
@@ -145,7 +145,7 @@ class PartForm extends React.Component {
                     <div className="input-group">
                         <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="part-document-addon" />
                     </div>
-                    {this.part ? this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />): ''}
+                    {this.state.part.stations ? this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />) : ''}
                 </form>
                 <br />
                 <button className="btn btn-success" onClick={this.showModal}>Add Station</button>
@@ -160,7 +160,7 @@ class PartForm extends React.Component {
                     <FormGroup>
                         <ControlLabel>Stations</ControlLabel>
                         <FormControl componentClass="select" placeholder="Select a station" onChange={this.handleSelectChange}>
-                            {this.state.stations.map(station => <option key={station.id} value={station.id}>{station.name}</option>)}
+                            {this.state.loaded ? this.state.stations.map(station => <option key={station.id} value={station.id}>{station.name}</option>) : 'Loading ...'}
                         </FormControl>
                     </FormGroup>
                     <FormGroup>
