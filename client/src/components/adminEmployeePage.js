@@ -42,15 +42,18 @@ class AdminEmployeePage extends React.Component {
 
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         Axios.get('/api/v1/users/all')
             .then(result => this.setState({employees: result.data}));
+        let x = setInterval(() => {
+            Axios.get('/api/v1/users/all')
+            .then(result => this.setState({employees: result.data}))
+        }, 15000);
     }
-
-    /*  componentWillUpdate = () => {
-         Axios.get('/api/v1/users/all')
-             .then(result => this.setState({employees: result.data}))
-     } */
+    componentWillUnmount = () => {
+        clearInterval(this.state.interval);
+    }
+    
 
     handleTabSelect = (event) => {
         const target = event.target;
