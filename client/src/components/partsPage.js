@@ -46,12 +46,10 @@ class PartPage extends React.Component {
     }
 
     componentDidMount = () => {
-        Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}));
-    
         let x = setInterval(() => {
             Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}));
+            .then(result => this.setState({parts: result.data}))
+
         }, 15000);
         this.setState({interval: x});    
     }
@@ -59,6 +57,7 @@ class PartPage extends React.Component {
     componentWillUnmount = () => {
         clearInterval(this.state.interval);
     }
+    
 
     handleTabSelect = (event) => {
         const target = event.target;
