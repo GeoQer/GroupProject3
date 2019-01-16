@@ -17,7 +17,7 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
-        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} />)}
+        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} handleEdit={props.handleEdit} id={part.id} />)}
     </div>
 )
 
@@ -29,6 +29,7 @@ const PartCard = props => (
                 <p><strong>Stations: </strong></p>
                 {props.stations.map(station => <p key={station.id}>{station.name}</p>)}
                 <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
+                <button style={{marginLeft: "10px"}} className="btn btn-danger" data-id={props.id} onClick={props.handleEdit}>Edit Part</button>
             </div>
         </div>
     </div>
@@ -76,7 +77,6 @@ class PartPage extends React.Component {
 
     handleEdit = event => {
         const id = event.target.getAttribute('data-id');
-        console.log("ID: ", id, this.state);
         Axios.get(`/api/v1/parts/edit/${id}`)
             .then(result => sessionStorage.setItem('editPart', JSON.stringify(result.data)));
         document.getElementById('create-link').click();

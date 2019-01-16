@@ -25,17 +25,19 @@ class PartForm extends React.Component {
             },
             showModal: false
         }
-        Axios.get('/api/v1/stations/all')
-            .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
-
     }
 
+    componentWillMount = () => {
+        Axios.get('/api/v1/stations/all')
+        .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
+    }
 
     componentDidMount = () => {
         let editPart = sessionStorage.getItem('editPart');
 
-        if (editPart == null) {
+        if (editPart !== "null") {
             editPart = JSON.parse(editPart);
+            console.log(editPart);
             this.setState({ part: editPart }, () => {
                 document.getElementById('part-id').value = this.state.part.id;
                 document.getElementById('part-name').value = this.state.part.name;
@@ -104,7 +106,6 @@ class PartForm extends React.Component {
             var reader = new FileReader();
             reader.onloadend = (e) => {
                 const blob = new Blob([e.target.result], { type: file.type });
-                console.count();
                 Axios.post('/api/v1/parts/create', {
                     part: { ...this.state.part, filename: file.name }
                 })
@@ -118,7 +119,6 @@ class PartForm extends React.Component {
             reader.readAsArrayBuffer(file);
         }
         else{
-            console.count();
             Axios.post('/api/v1/parts/create', {
                 part: { ...this.state.part, filename: 'no file' }
             })
@@ -142,7 +142,7 @@ class PartForm extends React.Component {
                     <div className="input-group">
                         <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="part-document-addon" />
                     </div>
-                    {this.state.part.stations ? this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />): ''}
+                    {this.part ? this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />): ''}
                 </form>
                 <br />
                 <button className="btn btn-success" onClick={this.showModal}>Add Station</button>
