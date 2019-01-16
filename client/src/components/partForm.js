@@ -24,6 +24,7 @@ class PartForm extends React.Component {
             },
             showModal: false
         }
+        console.count('CONSTRUCTOR');
         Axios.get('/api/v1/stations/all')
             .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
     };
@@ -83,7 +84,7 @@ class PartForm extends React.Component {
             var reader = new FileReader();
             reader.onloadend = (e) => {
                 const blob = new Blob([e.target.result], { type: file.type });
-
+                console.count();
                 Axios.post('/api/v1/parts/create', {
                     part: {...this.state.part, filename: file.name}
                 })
@@ -96,6 +97,7 @@ class PartForm extends React.Component {
             reader.readAsArrayBuffer(file);
         }
         else{
+            console.count();
             Axios.post('/api/v1/parts/create', {
                 part: {...this.state.part, filename: 'no file'}
             })
