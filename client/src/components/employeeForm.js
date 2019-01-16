@@ -14,7 +14,6 @@ class EmployeeForm extends React.Component {
                 name: '',
                 email: '',
                 password: '',
-                admin: false
             },
            
         }
@@ -46,13 +45,20 @@ class EmployeeForm extends React.Component {
     }
 
      handleSubmit = async () => {
-        if (this.state.employee.length < 1) {
-            console.log('There is no information to post');
+         console.log(this.state.employee);
+        if (this.state.employee.name.length < 1) {
+            console.log('Name your employee before submitting');
             return;
         }
         else{
-            Axios.post('/api/v1/employees/create', {
+            Axios.post('/api/v1/auth/create', {
                 employee: {...this.state.employee }
+            })
+            .then(() => {
+                document.getElementById('employee-id').value = '';
+                document.getElementById('employee-name').value = '';
+                document.getElementById('employee-email').value = '';
+                document.getElementById('employee-password').value = '';
             })
             .catch(err => console.log(err));
         }

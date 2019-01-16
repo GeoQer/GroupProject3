@@ -17,7 +17,7 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
-        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} handleEdit={props.handleEdit} id={part.id} />)}
+        {props.parts.map((part, index) => <PartCard key={index} title={part.name} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} handleEdit={props.handleEdit} id={part.id} handleDelete={props.handleDelete} />)}
     </div>
 )
 
@@ -27,9 +27,10 @@ const PartCard = props => (
             <div className="caption">
                 <h3 className="card-title">{props.title}</h3>
                 <p><strong>Stations: </strong></p>
-                {props.stations.map(station => <p key={station.id}>{station.name}</p>)}
+                {props.stations.map((station, index) => <p key={`${station.id}${index}`}>{station.name}</p>)}
                 <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
-                <button style={{marginLeft: "10px"}} className="btn btn-danger" data-id={props.id} onClick={props.handleEdit}>Edit Part</button>
+                <button style={{marginLeft: "10px"}} className="btn btn-warning" data-id={props.id} onClick={props.handleEdit}>Edit</button>
+                <button style={{marginLeft: "10px"}} className="btn btn-danger" data-id={props.id} onClick={props.handleDelete}>Delete</button>
             </div>
         </div>
     </div>
@@ -44,6 +45,11 @@ class PartPage extends React.Component {
             interval: 0
         }
 
+    }
+
+    componentWillMount = () => {
+        Axios.get('/api/v1/parts/all')
+            .then(result => this.setState({parts: result.data}))
     }
 
     componentDidMount = () => {
@@ -77,8 +83,19 @@ class PartPage extends React.Component {
     handleEdit = event => {
         const id = event.target.getAttribute('data-id');
         Axios.get(`/api/v1/parts/edit/${id}`)
-            .then(result => sessionStorage.setItem('editPart', JSON.stringify(result.data)));
-        document.getElementById('create-link').click();
+            .then(result => {
+                sessionStorage.setItem('editPart', JSON.stringify(result.data));
+                document.getElementById('create-link').click();
+            });
+    }
+
+    handleDelete = event => {
+        const id = event.target.getAttribute('data-id');
+        Axios.put(`/api/v1/parts/archive/${id}`)
+            .then(result => {
+                Axios.get('/api/v1/parts/all')
+                    .then(result => this.setState({parts: result.data}))
+            });
     }
 
     render = props => (
@@ -90,7 +107,7 @@ class PartPage extends React.Component {
             <br />
             <br />
             <Route path="/admin/parts/create" component={PartForm} />
-            <Route path="/admin/parts/view" component={() => <ViewParts parts={this.state.parts} viewAttachment={this.viewAttachment} handleEdit={this.handleEdit} />} />
+            <Route path="/admin/parts/view" component={() => <ViewParts parts={this.state.parts} viewAttachment={this.viewAttachment} handleEdit={this.handleEdit} handleDelete={this.handleDelete} />} />
         </div>
     )
 }

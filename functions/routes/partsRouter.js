@@ -11,7 +11,7 @@ router.post('/create', (req, res) => {
                     db.collection('parts').doc(part.id).set({
                         name: part.name || '',
                         stations: part.stations,
-                        filename: part.filename
+                        filename: part.filename,
                     })
                         .then(response => res.json({ existingPartID: part.id }))
                 }
@@ -22,7 +22,8 @@ router.post('/create', (req, res) => {
             id: part.id || '',
             name: part.name || '',
             stations: part.stations,
-            filename: part.filename
+            filename: part.filename,
+            isArchived: false
         })
             .then(response => {
                 res.json({ newPartID: response.id })
@@ -49,17 +50,22 @@ router.get('/edit/:id', (req, res) => {
 })
 
 router.get('/all', (req, res) => {
-    db.collection('parts').get()
+    db.collection('parts').where('isArchived', '==', false).get()
         .then(docs => {
             const arr = [];
             docs.forEach(doc => {
-                if (doc.data().id !== '')
-                    arr.push({ ...doc.data(), filepath: `${doc.id}/${doc.data().filename}` });
-                else
                     arr.push({ ...doc.data(), id: doc.id, filepath: `${doc.id}/${doc.data().filename}` });
             });
             res.json(arr);
         })
+})
+
+router.put('/archive/:id', (req, res) => {
+    db.collection('parts').doc(req.params.id).update({
+        isArchived: true
+    })
+    .then(() => res.json({success: true}))
+    .catch(err => res.json({ err }))
 })
 
 module.exports = router;

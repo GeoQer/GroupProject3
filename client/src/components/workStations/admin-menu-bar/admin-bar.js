@@ -72,7 +72,7 @@ class AdminBar extends React.Component {
                     <Link to="/admin/parts/view" id="parts" />
                     <Link to="/admin/stations" id="stations" />
                     <Link to="/admin/jobs" id="jobs" />
-                    <Link to="/admin/employees" id="employees" />
+                    <Link to="/admin/employees/view" id="employees" />
                     <Link to="/admin" id="admin" />
                     <Link to="/" id="logout" />
                     <Route path="/admin/parts" component={PartPage} />
