@@ -3,6 +3,7 @@ import AdminBar from "./workStations/admin-menu-bar/index";
 import Axios from 'axios';
 import WorkOrder from './WorkOrder';
 import { Link } from 'react-router-dom';
+import "./admin.css"; 
 const firebase = require('firebase/app');
 require('firebase/auth');
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
@@ -50,18 +51,22 @@ class Admin extends React.Component {
   render() {
     if (!(sessionStorage.getItem('isAdmin') === "true")) {
       return (
+      <div className='c'> 
         <div className="container">
           <h1>You are not an Admin</h1>
           <Link to="/employee">Go to Employee Page</Link>
         </div>
+      </div>
       )
     }
     else if (!this.state.isLoggedIn) {
       return (
+      <div className='d'>
         <div className="container">
           <h1>You are not logged in</h1>
           <Link to="/">login</Link>
         </div>
+      </div>
       )
     }
     else {

@@ -4,6 +4,7 @@ import { Route, Link } from 'react-router-dom';
 import Axios from 'axios';
 const firebase = require('firebase/app');
 require('firebase/storage');
+require('firebase/firestore');
 var config = {
     apiKey: "AIzaSyAZB-qbjpKVRvaQt17kPsPTMav3O12by6k",
     authDomain: "project-runner-f1bdc.firebaseapp.com",
@@ -16,6 +17,7 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
+<<<<<<< HEAD
         <div className="table-resonsive">
             <table className="table">
                 <thead>
@@ -36,25 +38,58 @@ const ViewParts = props => (
     </div>
 )
 
+=======
+        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} />)}
+    </div>
+)
+
+const PartCard = props => (
+    <div className="col-sm-6 col-md-4">
+        <div className="thumbnail" >
+            <div className="caption">
+                <h3 className="card-title">{props.title}</h3>
+                <p><strong>Stations: </strong></p>
+                {props.stations.map(station => <p key={station.id}>{station.name}</p>)}
+                <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
+            </div>
+        </div>
+    </div>
+);
+>>>>>>> 1e15c9fdedcfd596bcd3f16f6a7ce31224379910
 
 class PartPage extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            parts: []
+            parts: [],
+            interval: 0
         }
 
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         Axios.get('/api/v1/parts/all')
+<<<<<<< HEAD
             .then(result => this.setState({ parts: result.data }));
     }
 
     componentWillUpdate = () => {
         Axios.get('/api/v1/parts/all')
             .then(result => this.setState({ parts: result.data }))
+=======
+            .then(result => this.setState({parts: result.data}));
+    
+        let x = setInterval(() => {
+            Axios.get('/api/v1/parts/all')
+            .then(result => this.setState({parts: result.data}));
+        }, 15000);
+        this.setState({interval: x});    
+    }
+
+    componentWillUnmount = () => {
+        clearInterval(this.state.interval);
+>>>>>>> 1e15c9fdedcfd596bcd3f16f6a7ce31224379910
     }
 
     handleTabSelect = (event) => {
