@@ -20,15 +20,35 @@ class PartForm extends React.Component {
             stations: [],
             part: {
                 id: '',
+                name: '',
                 doc: '',
                 stations: []
             },
             showModal: false
         }
-        console.count('CONSTRUCTOR');
+    }
+
+    componentWillMount = () => {
         Axios.get('/api/v1/stations/all')
-            .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
-    };
+        .then(result => this.setState({ stations: result.data, selectedStation: result.data[0] }));
+    }
+
+    componentDidMount = () => {
+        let editPart = sessionStorage.getItem('editPart');
+
+        if (editPart !== "null") {
+            editPart = JSON.parse(editPart);
+            console.log(editPart);
+            this.setState({ part: editPart }, () => {
+                document.getElementById('part-id').value = this.state.part.id;
+                document.getElementById('part-name').value = this.state.part.name;
+            });
+        }
+
+        sessionStorage.setItem('editPart', null);
+
+    }
+
 
     removeStation = event => {
         event.preventDefault();
@@ -69,12 +89,14 @@ class PartForm extends React.Component {
 
     clear = () => {
         document.getElementById('part-id').value = '';
+        document.getElementById('attachment').value = '';
+        document.getElementById('part-name').value = '';
         this.setState({ part: { id: '', stations: [] } });
     }
 
-    handleSubmit = async () => {
-        if(this.state.part.stations.length < 1){
-            console.log('There is no information to post');
+    handleSubmit = () => {
+        if (this.state.part.stations.length < 1) {
+            console.log('Please select a minimum of one station');
             return;
         }
 
@@ -85,28 +107,28 @@ class PartForm extends React.Component {
             var reader = new FileReader();
             reader.onloadend = (e) => {
                 const blob = new Blob([e.target.result], { type: file.type });
-                console.count();
                 Axios.post('/api/v1/parts/create', {
-                    part: {...this.state.part, filename: file.name}
+                    part: { ...this.state.part, filename: file.name }
                 })
-                .then(response => {
-                    const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
-                    ref.put(blob)
-                        .then(() => console.log('success'), () => console.log('error'));
-                })
+                    .then(response => {
+                        this.clear();
+                        const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
+                        ref.put(blob)
+                            .then(() => console.log('success'), () => console.log('error'));
+                    })
             }
             reader.readAsArrayBuffer(file);
         }
         else{
-            console.count();
             Axios.post('/api/v1/parts/create', {
-                part: {...this.state.part, filename: 'no file'}
+                part: { ...this.state.part, filename: 'no file' }
             })
-            .catch(err => console.log(err));
+                .then(response => this.clear())
+                .catch(err => console.log(err));
         }
     }
 
-    render() {
+    render = () => {
         return (
             <div className="container">
                 <div className='row'>
@@ -117,9 +139,13 @@ class PartForm extends React.Component {
                         <input name="id" id="part-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
                     </div>
                     <div className="input-group">
+                        <span className="input-group-addon" id="part-name-addon">Part Name</span>
+                        <input name="name" id="part-name" onChange={this.handleInput} type="text" className="form-control" />
+                    </div>
+                    <div className="input-group">
                         <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="part-document-addon" />
                     </div>
-                    {this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />)}
+                    {this.part ? this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />): ''}
                 </form>
                 <br />
                 <button className="btn btn-success" onClick={this.showModal}>Add Station</button>
@@ -148,6 +174,7 @@ class PartForm extends React.Component {
         )
     }
 }
+
 
 
 export default PartForm;

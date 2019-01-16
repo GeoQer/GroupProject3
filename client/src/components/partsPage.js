@@ -17,7 +17,7 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
-        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} />)}
+        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} handleEdit={props.handleEdit} id={part.id} />)}
     </div>
 )
 
@@ -29,6 +29,7 @@ const PartCard = props => (
                 <p><strong>Stations: </strong></p>
                 {props.stations.map(station => <p key={station.id}>{station.name}</p>)}
                 <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
+                <button style={{marginLeft: "10px"}} className="btn btn-danger" data-id={props.id} onClick={props.handleEdit}>Edit Part</button>
             </div>
         </div>
     </div>
@@ -73,17 +74,23 @@ class PartPage extends React.Component {
             .then(url => window.open(url, '_blank'));
     }
 
+    handleEdit = event => {
+        const id = event.target.getAttribute('data-id');
+        Axios.get(`/api/v1/parts/edit/${id}`)
+            .then(result => sessionStorage.setItem('editPart', JSON.stringify(result.data)));
+        document.getElementById('create-link').click();
+    }
+
     render = props => (
         <div className="container">
             <ul className="nav nav-pills">
                 <li role="presentation" className="active tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/view">View</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/edit">Edit</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/create">Create</Link></li>
+                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link id="create-link" to="/admin/parts/create">Create</Link></li>
             </ul>
             <br />
             <br />
             <Route path="/admin/parts/create" component={PartForm} />
-            <Route path="/admin/parts/view" component={() => <ViewParts parts={this.state.parts} viewAttachment={this.viewAttachment} />} />
+            <Route path="/admin/parts/view" component={() => <ViewParts parts={this.state.parts} viewAttachment={this.viewAttachment} handleEdit={this.handleEdit} />} />
         </div>
     )
 }
