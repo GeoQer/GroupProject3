@@ -3,10 +3,10 @@ const router = express.Router();
 const db = require('../resources/db');
 
 router.get('/all', (req, res) => {
-    db.collection('employees').get()
+    db.collection('users').get()
         .then(docs => {
             let arr = [];
-            docs.forEach(doc => arr.push({ name: doc.data().name, id: doc.id }))
+            docs.forEach(doc => arr.push({...doc.data(), id: doc.id}));
             res.json(arr);
         })
         .catch(err => res.json({ err }));
@@ -30,7 +30,8 @@ router.get('/:id', (req, res) => {
         .catch(err => {console.log(err); res.json({ err })});
 })
 
-router.put('/priveleges', (req, res) => {
+router.put('/togglepermission', (req, res) => {
+    console.log('DATA: ', req.body.id, req.body.isAdmin);
     if (!req.body.id) {
         res.json({ err: 'Please provide a valid employee id' });
     }
@@ -38,14 +39,14 @@ router.put('/priveleges', (req, res) => {
         res.json({ err: 'Please provide an "isAdmin" parameter with a boolean data type' })
     }
     else {
-        db.collection('employees').doc(req.body.id).get()
+        db.collection('users').doc(req.body.id).get()
             .then(doc => {
                 if(!doc.exists){
                     res.json({err: 'Employee not found'});
                     return;
                 }
 
-                db.collection('employees').doc(req.body.id).set({ isAdmin: req.body.isAdmin }, { merge: true })
+                db.collection('users').doc(req.body.id).set({ isAdmin: (req.body.isAdmin === 'true' ? false : true) }, { merge: true })
                 .then(() => res.json({ success: true }))
                 .catch(err => res.json({ err }));
             })
