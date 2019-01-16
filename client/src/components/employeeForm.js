@@ -51,7 +51,7 @@ class EmployeeForm extends React.Component {
             return;
         }
         else{
-            Axios.post('/api/v1/users/create', {
+            Axios.post('/api/v1/employees/create', {
                 employee: {...this.state.employee }
             })
             .catch(err => console.log(err));
@@ -64,7 +64,7 @@ class EmployeeForm extends React.Component {
             <div className="container">
                 <div className='row'>
                     <div className='col-sm-4'>
-                        <form id="employee-form" action="/api/v1/users/test" method="POST">
+                        <form id="employee-form" action="/api/v1/employees/test" method="POST">
                             <div className="input-group">
                                 <span className="input-group-addon" id="employee-number-addon">Employee ID</span>
                                 <input name="id" id="employee-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="employee-number-addon" />
