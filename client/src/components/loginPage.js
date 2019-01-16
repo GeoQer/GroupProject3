@@ -1,11 +1,13 @@
 import React from 'react';
 import Login from './workStations/pages/login';
 //import SignUp from './workStations/pages/signup';
-import './loginPage.css';
+
+import "./loginForm.css"; 
 
 class LoginPage extends React.Component {
     render() {
         return (
+          <div className='a'>
             <div className='container'>
                 <div className='row'>
                     <div className='col-sm-3'>
@@ -13,6 +15,7 @@ class LoginPage extends React.Component {
                     </div>
                 </div>
             </div>
+        </div>
         );
     }
 }
