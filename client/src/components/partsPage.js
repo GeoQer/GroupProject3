@@ -4,6 +4,7 @@ import { Route, Link } from 'react-router-dom';
 import Axios from 'axios';
 const firebase = require('firebase/app');
 require('firebase/storage');
+require('firebase/firestore');
 var config = {
     apiKey: "AIzaSyAZB-qbjpKVRvaQt17kPsPTMav3O12by6k",
     authDomain: "project-runner-f1bdc.firebaseapp.com",
@@ -16,12 +17,12 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
-        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment}/> )}
+        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} />)}
     </div>
 )
 
 const PartCard = props => (
-   <div className="col-sm-6 col-md-4">
+    <div className="col-sm-6 col-md-4">
         <div className="thumbnail" >
             <div className="caption">
                 <h3 className="card-title">{props.title}</h3>
@@ -38,17 +39,17 @@ class PartPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            parts: []
+            parts: [],
+            interval: 0
         }
 
     }
 
     componentDidMount = () => {
-        Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}));
         let x = setInterval(() => {
             Axios.get('/api/v1/parts/all')
             .then(result => this.setState({parts: result.data}))
+
         }, 15000);
         this.setState({interval: x});    
     }
