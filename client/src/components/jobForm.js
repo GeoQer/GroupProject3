@@ -40,17 +40,22 @@ class JobForm extends React.Component {
         const name = event.target.children[event.target.selectedIndex].text;
         const job = Object.assign(this.state.job);
         job.part = {id, name};
-        this.setState({ job }, () => console.log(this.state));
+        this.setState({ job, errMsg: '' });
     }
 
     handleInput = (event) => {
+
         const name = event.target.name;
         let obj = Object.assign(this.state.job);
         obj[name] = event.target.value;
-        this.setState({ job: obj });
+        this.setState({ job: obj, errMsg: '' });
     }
 
     handleSubmit = async () => {
+        if(this.state.job.part === 'Select a Part' || this.state.job.quantity < 1){
+            this.setState({errMsg: 'Please make sure you have selected a Part and set a Quantity'})
+            return;
+        }
         Axios.post('/api/v1/workorders/create', {
             job: this.state.job
         })
@@ -90,6 +95,9 @@ class JobForm extends React.Component {
                 <div className="row">
                     <button className="btn btn-success" onClick={this.handleSubmit}>Submit</button>
                     <button className="btn btn-danger" onClick={this.clear}>Clear</button>
+                </div>
+                <div className="row">
+                    <h3 style={{color: 'red'}}>{this.state.errMsg}</h3>
                 </div>
             </div>
         )

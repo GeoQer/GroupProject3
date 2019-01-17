@@ -27,6 +27,7 @@ const JobCard = props => (
             <div className="caption">
                 <h3 className="card-title">{props.title}</h3>
                 <p><strong>Part: </strong><span>{props.job.part.name}</span></p>
+                <p><strong>Quantity: </strong><span>{props.job.quantity}</span></p>
                 <p><strong>Current Station: </strong><span>{props.job.currentStation.name}</span></p>
                 <button className="btn btn-primary" data-filepath={`${props.job.part.id}/${props.job.part.filename}`} onClick={props.viewAttachment}>View Attachment</button>
             </div>
