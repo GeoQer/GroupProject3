@@ -44,7 +44,6 @@ class AdminEmployeePage extends React.Component {
 
     componentDidMount = () => {
         let x = setInterval(() => {
-            console.log('INTERVAL');
             Axios.get('/api/v1/employees/all')
                 .then(result => this.setState({ employees: result.data }))
         }, 15000);
