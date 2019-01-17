@@ -31,7 +31,7 @@ router.post('/login', (req, res) => {
             db.collection('users').doc(user.user.uid).get()
             .then(doc => {
                 user.user.getIdToken().then(token => {
-                    res.json({uid: user.user.uid, isAdmin: doc.data().isAdmin, token})
+                    res.json({...doc.data(), uid: user.user.uid, token})
                 })
             })
         })

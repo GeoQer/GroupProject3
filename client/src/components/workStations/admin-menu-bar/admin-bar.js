@@ -10,7 +10,9 @@ class AdminBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            ref: null
+            ref: null,
+            username: null
+
         }
     }
 
@@ -37,7 +39,7 @@ class AdminBar extends React.Component {
                     <Navbar inverse collapseOnSelect>
                         <Navbar.Header>
                             <Navbar.Brand>
-                                <a href="/" data-ref="admin" onClick={this.handleClick}>Admin Name</a>
+                                <a href="/" data-ref="admin" onClick={this.handleClick}>{sessionStorage.getItem('username')}</a>
                             </Navbar.Brand>
                             <Navbar.Toggle />
                         </Navbar.Header>

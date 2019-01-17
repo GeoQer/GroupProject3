@@ -2,7 +2,6 @@ import React from 'react';
 import EmployeeForm from './employeeForm';
 import { Route, Link } from 'react-router-dom';
 import Axios from 'axios';
-import { isatty } from 'tty';
 
 const ViewEmployees = props => (
     <div className="row">

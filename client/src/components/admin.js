@@ -36,6 +36,7 @@ class Admin extends React.Component {
       token: sessionStorage.getItem('token')
     })
       .then(result => {
+        console.log(result.data);
         if (result.data.uid === sessionStorage.getItem('uid')) {
           this.setState({ isLoggedIn: true })
         }
