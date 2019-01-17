@@ -7,7 +7,6 @@ const verify = require('../resources/admin').auth();
 
 router.post('/create', (req, res) => {
     const userInfo = req.body.employee;
-    console.log('USER INFO: ', userInfo);
 
     auth.createUserWithEmailAndPassword(userInfo.email, userInfo.password)
         .then(user => {
