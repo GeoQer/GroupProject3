@@ -3,6 +3,7 @@ import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import PartPage from '../../partsPage';
 import Axios from 'axios';
+import AdminEmployeePage from '../../adminEmployeePage';
 
 class AdminBar extends React.Component {
     constructor(props) {
@@ -51,7 +52,7 @@ class AdminBar extends React.Component {
                 </NavItem>
                             </Nav>
                             <Nav>
-                                <NavItem eventKey={3} title="Parts" data-ref="parts" onClick={this.handleClick} >
+                                <NavItem eventKey={3} title="parts" data-ref="parts" onClick={this.handleClick} >
                                     Parts
                 </NavItem>
                             </Nav>
@@ -71,10 +72,11 @@ class AdminBar extends React.Component {
                     <Link to="/admin/parts/view" id="parts" />
                     <Link to="/admin/stations" id="stations" />
                     <Link to="/admin/jobs" id="jobs" />
-                    <Link to="/admin/employees" id="employees" />
+                    <Link to="/admin/employees/view" id="employees" />
                     <Link to="/admin" id="admin" />
                     <Link to="/" id="logout" />
                     <Route path="/admin/parts" component={PartPage} />
+                    <Route path="/admin/employees" component={AdminEmployeePage} />
                 </div>
             </Router>
         );

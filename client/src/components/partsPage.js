@@ -17,7 +17,7 @@ firebase.initializeApp(config);
 
 const ViewParts = props => (
     <div className="row">
-        {props.parts.map(part => <PartCard key={part.id} title={part.id} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} />)}
+        {props.parts.map((part, index) => <PartCard key={index} title={part.name} stations={part.stations} filepath={part.filepath} viewAttachment={props.viewAttachment} handleEdit={props.handleEdit} id={part.id} handleDelete={props.handleDelete} />)}
     </div>
 )
 
@@ -27,8 +27,10 @@ const PartCard = props => (
             <div className="caption">
                 <h3 className="card-title">{props.title}</h3>
                 <p><strong>Stations: </strong></p>
-                {props.stations.map(station => <p key={station.id}>{station.name}</p>)}
+                {props.stations.map((station, index) => <p key={`${station.id}${index}`}>{station.name}</p>)}
                 <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
+                <button style={{marginLeft: "10px"}} className="btn btn-warning" data-id={props.id} onClick={props.handleEdit}>Edit</button>
+                <button style={{marginLeft: "10px"}} className="btn btn-danger" data-id={props.id} onClick={props.handleDelete}>Delete</button>
             </div>
         </div>
     </div>
@@ -45,13 +47,16 @@ class PartPage extends React.Component {
 
     }
 
-    componentDidMount = () => {
+    componentWillMount = () => {
         Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}));
-    
+            .then(result => this.setState({parts: result.data}))
+    }
+
+    componentDidMount = () => {
         let x = setInterval(() => {
             Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}));
+            .then(result => this.setState({parts: result.data}))
+
         }, 15000);
         this.setState({interval: x});    
     }
@@ -59,6 +64,7 @@ class PartPage extends React.Component {
     componentWillUnmount = () => {
         clearInterval(this.state.interval);
     }
+    
 
     handleTabSelect = (event) => {
         const target = event.target;
@@ -74,17 +80,34 @@ class PartPage extends React.Component {
             .then(url => window.open(url, '_blank'));
     }
 
+    handleEdit = event => {
+        const id = event.target.getAttribute('data-id');
+        Axios.get(`/api/v1/parts/edit/${id}`)
+            .then(result => {
+                sessionStorage.setItem('editPart', JSON.stringify(result.data));
+                document.getElementById('create-link').click();
+            });
+    }
+
+    handleDelete = event => {
+        const id = event.target.getAttribute('data-id');
+        Axios.put(`/api/v1/parts/archive/${id}`)
+            .then(result => {
+                Axios.get('/api/v1/parts/all')
+                    .then(result => this.setState({parts: result.data}))
+            });
+    }
+
     render = props => (
         <div className="container">
             <ul className="nav nav-pills">
                 <li role="presentation" className="active tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/view">View</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/edit">Edit</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/create">Create</Link></li>
+                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link id="create-link" to="/admin/parts/create">Create</Link></li>
             </ul>
             <br />
             <br />
             <Route path="/admin/parts/create" component={PartForm} />
-            <Route path="/admin/parts/view" component={() => <ViewParts parts={this.state.parts} viewAttachment={this.viewAttachment} />} />
+            <Route path="/admin/parts/view" component={() => <ViewParts parts={this.state.parts} viewAttachment={this.viewAttachment} handleEdit={this.handleEdit} handleDelete={this.handleDelete} />} />
         </div>
     )
 }

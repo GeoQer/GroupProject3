@@ -6,16 +6,15 @@ const db = require('../resources/db');
 const verify = require('../resources/admin').auth();
 
 router.post('/create', (req, res) => {
-    auth.createUserWithEmailAndPassword(req.body.email, req.body.password)
+    const userInfo = req.body.employee;
+    console.log('USER INFO: ', userInfo);
+
+    auth.createUserWithEmailAndPassword(userInfo.email, userInfo.password)
         .then(user => {
-            db.collection('employees').doc(user.user.uid).set({
-                name: req.body.name,
+            db.collection('users').doc(user.user.uid).set({
+                name: userInfo.name,
+                email: userInfo.email || 'No Email',
                 isAdmin: false,
-                status: {
-                    currentStation: '',
-                    isActive: false,
-                    isLoggedIn: false
-                }
             })
             .then(doc => res.json({success: true, uid: user.user.uid}))
             .catch(err => {console.log(err); json.res({err})})
