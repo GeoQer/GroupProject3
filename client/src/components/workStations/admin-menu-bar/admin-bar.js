@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import PartPage from '../../partsPage';
 import Axios from 'axios';
 import AdminEmployeePage from '../../adminEmployeePage';
+import JobPage from '../../jobsPage';
 
 class AdminBar extends React.Component {
     constructor(props) {
@@ -71,12 +72,13 @@ class AdminBar extends React.Component {
                     </Navbar>
                     <Link to="/admin/parts/view" id="parts" />
                     <Link to="/admin/stations" id="stations" />
-                    <Link to="/admin/jobs" id="jobs" />
+                    <Link to="/admin/jobs/view" id="jobs" />
                     <Link to="/admin/employees/view" id="employees" />
                     <Link to="/admin" id="admin" />
                     <Link to="/" id="logout" />
                     <Route path="/admin/parts" component={PartPage} />
                     <Route path="/admin/employees" component={AdminEmployeePage} />
+                    <Route path="/admin/jobs" component={JobPage} />
                 </div>
             </Router>
         );

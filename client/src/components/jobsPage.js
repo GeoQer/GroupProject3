@@ -5,19 +5,19 @@ import Axios from 'axios';
 const firebase = require('firebase/app');
 require('firebase/storage');
 require('firebase/firestore');
-var config = {
-    apiKey: "AIzaSyAZB-qbjpKVRvaQt17kPsPTMav3O12by6k",
-    authDomain: "project-runner-f1bdc.firebaseapp.com",
-    databaseURL: "https://project-runner-f1bdc.firebaseio.com",
-    projectId: "project-runner-f1bdc",
-    storageBucket: "project-runner-f1bdc.appspot.com",
-    messagingSenderId: "757776283780"
-};
-firebase.initializeApp(config);
+// var config = {
+//     apiKey: "AIzaSyAZB-qbjpKVRvaQt17kPsPTMav3O12by6k",
+//     authDomain: "project-runner-f1bdc.firebaseapp.com",
+//     databaseURL: "https://project-runner-f1bdc.firebaseio.com",
+//     projectId: "project-runner-f1bdc",
+//     storageBucket: "project-runner-f1bdc.appspot.com",
+//     messagingSenderId: "757776283780"
+// };
+// firebase.initializeApp(config);
 
 const ViewJobs = props => (
     <div className="row">
-        {props.jobs.map(part => <JobCard key={job.id} title={job.id} parts={job.parts} filepath={job.filepath} viewAttachment={props.viewAttachment} />)}
+        {props.jobs.map(job => <JobCard key={job.id} title={job.id.slice(job.id.length - 4, job.id.length)} parts={job.parts} filepath={job.filepath} viewAttachment={props.viewAttachment} />)}
     </div>
 )
 
@@ -27,7 +27,7 @@ const JobCard = props => (
             <div className="caption">
                 <h3 className="card-title">{props.title}</h3>
                 <p><strong>Parts: </strong></p>
-                {props.parts.map(part => <p key={part.id}>{part.name}</p>)}
+                {/* {props.parts.map(part => <p key={part.id}>{part.name}</p>)} */}
                 <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
             </div>
         </div>
@@ -39,18 +39,19 @@ class JobPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            Jobs: [],
+            jobs: [],
+            parts: [],
             interval: 0
         }
 
     }
 
     componentDidMount = () => {
-        Axios.get('/api/v1/work-orders/all')
+        Axios.get('/api/v1/workorders/all')
             .then(result => this.setState({jobs: result.data}));
     
         let x = setInterval(() => {
-            Axios.get('/api/v1/work-orders/all')
+            Axios.get('/api/v1/workorders/all')
             .then(result => this.setState({jobs: result.data}));
         }, 15000);
         this.setState({interval: x});    
@@ -77,14 +78,13 @@ class JobPage extends React.Component {
     render = props => (
         <div className="container">
             <ul className="nav nav-pills">
-                <li role="presentation" className="active tab-link" onClick={this.handleTabSelect}><Link to="/admin/work-orders/view">View</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/work-orders/edit">Edit</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/work-orders/create">Create</Link></li>
+                <li role="presentation" className="active tab-link" onClick={this.handleTabSelect}><Link to="/admin/jobs/view">View</Link></li>
+                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/jobs/create">Create</Link></li>
             </ul>
             <br />
             <br />
-            <Route path="/admin/work-orders/create" component={JobForm} />
-            <Route path="/admin/work-order/view" component={() => <ViewJobs jobs={this.state.jobs} viewAttachment={this.viewAttachment} />} />
+            <Route path="/admin/jobs/create" component={JobForm} />
+            <Route path="/admin/jobs/view" component={() => <ViewJobs jobs={this.state.jobs} viewAttachment={this.viewAttachment} />} />
         </div>
     )
 }

@@ -71,7 +71,7 @@ class JobForm extends React.Component {
     }
 
     handleSubmit = async () => {
-        if(this.state.job.parts.length < 1){
+        if (this.state.job.parts.length < 1) {
             console.log('There is no information to post');
             return;
         }
@@ -85,58 +85,44 @@ class JobForm extends React.Component {
                 const blob = new Blob([e.target.result], { type: file.type });
 
                 Axios.post('/api/v1/work-orders/create', {
-                    job: {...this.state.part, filename: file.name}
+                    job: { ...this.state.part, filename: file.name }
                 })
-                .then(response => {
-                    const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
-                    ref.put(blob)
-                        .then(() => console.log('success'), () => console.log('error'));
-                })
+                    .then(response => {
+                        const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
+                        ref.put(blob)
+                            .then(() => console.log('success'), () => console.log('error'));
+                    })
             }
             reader.readAsArrayBuffer(file);
         }
-        else{
+        else {
             Axios.post('/api/v1/work-orders/create', {
-                job: {...this.state.job, filename: 'no file'}
+                job: { ...this.state.job, filename: 'no file' }
             })
-            .catch(err => console.log(err));
+                .catch(err => console.log(err));
         }
     }
 
     render() {
         return (
             <div className="container">
-                <form id="job-form" action="/api/v1/work-orders/test" method="POST">
-                    <div className="input-group">
-                        <span className="input-group-addon" id="job-number-addon">Job ID</span>
-                        <input name="id" id="job-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="job-number-addon" />
-                    </div>
-                    <div className="input-group">
-                        <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="job-document-addon" />
-                    </div>
-                    {this.state.job.parts.map((part, index) => <Part key={index} partName={part.name} id={part.id} removePart={this.removePart} />)}
-                </form>
+                <div className="row">
+                    <form id="job-form" action="/api/v1/work-orders/test" method="POST">
+                        <div className="input-group">
+                            <span className="input-group-addon" id="job-number-addon">Job ID</span>
+                            <input name="id" id="job-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="job-number-addon" />
+                        </div>
+                        <div className="input-group">
+                            <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="job-document-addon" />
+                        </div>
+                        {this.state.job.parts.map((part, index) => <Part key={index} partName={part.name} id={part.id} removePart={this.removePart} />)}
+                    </form>
+                </div>
                 <br />
-                <button className="btn btn-success" onClick={this.showModal}>Add Station</button>
-                <br />
-                <hr />
                 <div className="row">
                     <button className="btn btn-success" onClick={this.handleSubmit}>Submit</button>
                     <button className="btn btn-danger" onClick={this.clear}>Clear</button>
                 </div>
-                <Modal show={this.state.showModal}>
-                    <Modal.Title>Select a Part</Modal.Title>
-                    <FormGroup>
-                        <ControlLabel>Parts</ControlLabel>
-                        <FormControl componentClass="select" placeholder="Select a part" onChange={this.handleSelectChange}>
-                            {this.state.parts.map(part => <option key={part.id} value={part.id}>{part.name}</option>)}
-                        </FormControl>
-                    </FormGroup>
-                    <FormGroup>
-                        <button className="btn btn-success" onClick={this.addPart}>OK</button>
-                        <button className="btn btn-danger" onClick={this.hideModal}>Cancel</button>
-                    </FormGroup>
-                </Modal>
             </div>
         )
     }
