@@ -1,8 +1,6 @@
 import React from 'react';
 import Axios from 'axios';
-import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
-const firebase = require('firebase/app');
-require('firebase/storage');
+import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 
 const Part = props => (
     <div>
@@ -15,47 +13,34 @@ class JobForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedPart: {},
             parts: [],
             job: {
-                id: '',
-                quantity: '',
-                parts: []
+                part: "Select a Part",
+                quantity: 0,
+                notes: ''
             },
-            showModal: false
         }
-        Axios.get('/api/v1/work-orders/all')
-            .then(result => this.setState({ parts: result.data, selectedPart: result.data[0] }));
     };
 
-    removePart = event => {
-        event.preventDefault();
-        const id = event.target.getAttribute('data-id');
-        const obj = Object.assign(this.state.job);
-        const arr = this.state.job.parts.slice(0);
-        arr.forEach((part, index) => {
-            if (part.id === id) {
-                arr.splice(index, 1);
-            }
-        })
-        obj.stations = arr;
-        this.setState({ part: obj });
-    };
+    clear = () => {
+        let selector = document.getElementById('selector');
+        selector.selectedIndex = 0;
+        document.getElementById('notes').value = '';
+        document.getElementById('qty').value = '';
+        this.setState({job: {part: 'Selecta a Part', quantity: 0, notes: ''}});
+    }
 
-    showModal = () => this.setState({ showModal: true })
-
-    hideModal = () => this.setState({ showModal: false });
+    componentWillMount = () => {
+        Axios.get('/api/v1/parts/all')
+            .then(result => this.setState({parts: result.data}))
+    }
 
     handleSelectChange = (event) => {
         const id = event.target.value;
         const name = event.target.children[event.target.selectedIndex].text;
-        this.setState({ selectedPart: { id, name } });
-    }
-
-    addStation = () => {
-        const obj = Object.assign(this.state.job);
-        obj.stations.push(this.state.selectedPart);
-        this.setState({ part: obj, showModal: false, selectedJob: this.state.parts[0] });
+        const job = Object.assign(this.state.job);
+        job.part = {id, name};
+        this.setState({ job }, () => console.log(this.state));
     }
 
     handleInput = (event) => {
@@ -65,42 +50,13 @@ class JobForm extends React.Component {
         this.setState({ job: obj });
     }
 
-    clear = () => {
-        document.getElementById('job-id').value = '';
-        this.setState({ part: { id: '', parts: [] } });
-    }
-
     handleSubmit = async () => {
-        if (this.state.job.parts.length < 1) {
-            console.log('There is no information to post');
-            return;
-        }
-
-
-        const file = document.getElementById('attachment').files[0];
-
-        if (file !== undefined) {
-            var reader = new FileReader();
-            reader.onloadend = (e) => {
-                const blob = new Blob([e.target.result], { type: file.type });
-
-                Axios.post('/api/v1/work-orders/create', {
-                    job: { ...this.state.part, filename: file.name }
-                })
-                    .then(response => {
-                        const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
-                        ref.put(blob)
-                            .then(() => console.log('success'), () => console.log('error'));
-                    })
-            }
-            reader.readAsArrayBuffer(file);
-        }
-        else {
-            Axios.post('/api/v1/work-orders/create', {
-                job: { ...this.state.job, filename: 'no file' }
-            })
-                .catch(err => console.log(err));
-        }
+        Axios.post('/api/v1/workorders/create', {
+            job: this.state.job
+        })
+        .then(result => {
+            this.clear();
+        })
     }
 
     render() {
@@ -110,12 +66,24 @@ class JobForm extends React.Component {
                     <form id="job-form" action="/api/v1/work-orders/test" method="POST">
                         <div className="input-group">
                             <span className="input-group-addon" id="job-number-addon">Job ID</span>
-                            <input name="id" id="job-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="job-number-addon" />
+                            <span name="id" id="job-id" className="form-control" aria-describedby="job-number-addon">{this.state.id ? this.state.id : 'New Part'}</span>
                         </div>
+                        <br />
+                        <FormGroup>
+                            <ControlLabel>Parts</ControlLabel>
+                            <FormControl componentClass="select" placeholder="Select a part" onChange={this.handleSelectChange} id="selector">
+                                <option>Select a Part</option>
+                                {this.state.parts.map((part, index) => <option key={index} value={part.id}>{part.name}</option>)}
+                            </FormControl>
+                        </FormGroup>
                         <div className="input-group">
-                            <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="job-document-addon" />
+                            <span className="input-group-addon" id="job-quantity-addon">Quantity</span>
+                            <input name="quantity" type="number" className="form-control" id="qty" onChange={this.handleInput} />
                         </div>
-                        {this.state.job.parts.map((part, index) => <Part key={index} partName={part.name} id={part.id} removePart={this.removePart} />)}
+                        <div className="input-group" style={{marginTop: '10px'}}>
+                            <span className="input-group-addon" id="text-area-addon">Notes</span>
+                            <textarea name="notes" id="notes" onChange={this.handleInput} style={{height: '120px'}} className="form-control" aria-describedby="text-area-addon"></textarea>
+                        </div>
                     </form>
                 </div>
                 <br />

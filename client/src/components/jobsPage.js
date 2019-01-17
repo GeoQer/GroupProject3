@@ -17,7 +17,7 @@ require('firebase/firestore');
 
 const ViewJobs = props => (
     <div className="row">
-        {props.jobs.map(job => <JobCard key={job.id} title={job.id.slice(job.id.length - 4, job.id.length)} parts={job.parts} filepath={job.filepath} viewAttachment={props.viewAttachment} />)}
+        {props.jobs.map((job, index) => <JobCard key={index} title={job.id.slice(job.id.length - 4, job.id.length)} job={job} viewAttachment={props.viewAttachment} />)}
     </div>
 )
 
@@ -26,9 +26,9 @@ const JobCard = props => (
         <div className="thumbnail" >
             <div className="caption">
                 <h3 className="card-title">{props.title}</h3>
-                <p><strong>Parts: </strong></p>
-                {/* {props.parts.map(part => <p key={part.id}>{part.name}</p>)} */}
-                <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
+                <p><strong>Parts </strong><span>{props.job.part.name}</span></p>
+                <p><strong>Current Station: </strong><span>{props.job.currentStation.name}</span></p>
+                <button className="btn btn-primary" data-filepath={`${props.job.part.id}/${props.job.part.filename}`} onClick={props.viewAttachment}>View Attachment</button>
             </div>
         </div>
     </div>
@@ -40,7 +40,6 @@ class JobPage extends React.Component {
         super(props);
         this.state = {
             jobs: [],
-            parts: [],
             interval: 0
         }
 
@@ -71,6 +70,7 @@ class JobPage extends React.Component {
     }
 
     viewAttachment = event => {
+        console.log(event.target.getAttribute('data-filepath'));
         firebase.storage().ref(event.target.getAttribute('data-filepath')).getDownloadURL()
             .then(url => window.open(url, '_blank'));
     }
