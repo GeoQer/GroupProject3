@@ -81,6 +81,25 @@ class Employee extends React.Component {
     })
   }
 
+  handleJobFinish = event => {
+    clearInterval(this.state.clockInterval);
+
+    const currentWorkOrder = {}
+    Object.assign(currentWorkOrder, this.state.currentWorkOrder);
+    currentWorkOrder.currentStation.time = this.state.clock;
+
+    Axios.put(`api/v1/workorders/next`, {
+      currentWorkOrder,
+    })
+    .then(result => {
+      console.log(result.data);
+      Axios.get(`/api/v1/workorders/active/${this.state.currentWorkOrder.currentStation.id}`)
+        .then(result => {
+          this.setState({workOrders: result.data, modalShow: false, clock: 0})
+        })
+    })
+  }
+
   handleJobStop = (event) => {
     clearInterval(this.state.clockInterval);
     const currentStation = {};
@@ -150,7 +169,7 @@ class Employee extends React.Component {
           <Modal.Footer>
             <button className="btn btn-primary" data-filepath={this.state.currentWorkOrder.id ? `${this.state.currentWorkOrder.part.id}/${this.state.currentWorkOrder.part.filename}` : ''} onClick={this.viewAttachment}>View Attachment</button>
             <button className="btn btn-danger" onClick={this.handleJobStop}>Stop</button>
-            <button className="btn btn-success">Finish Job</button>
+            <button className="btn btn-success" onClick={this.handleJobFinish}>Finish Job</button>
           </Modal.Footer>
         </Modal>
 
