@@ -23,7 +23,7 @@ router.get('/active', (req, res) => {
 })
 
 router.get('/active/:station', (req, res) => {
-    db.collection('work-orders').where('isComplete', '==', false).where('currentProcess', '==', req.params.station).get()
+    db.collection('work-orders').where('isComplete', '==', false).where('currentStation.id', '==', req.params.station).get()
         .then(docs => {
             const arr = [];
             docs.forEach(doc => arr.push({ ...doc.data(), id: doc.id }));
@@ -58,8 +58,8 @@ router.post('/create', (req, res) => {
     const job = req.body.job
     db.collection('parts').doc(req.body.job.part.id).get()
         .then(doc => {
-            db.collection('work-orders').add({...job, part: {...doc.data(), id: doc.id}, currentStation: doc.data().stations[0]})
-                .then(doc => res.json({id: doc.id}))
+            db.collection('work-orders').add({ ...job, part: { ...doc.data(), id: doc.id }, currentStation: doc.data().stations[0], isComplete: false })
+                .then(doc => res.json({ id: doc.id }))
                 .catch(err => res.json({ err }));
 
         });

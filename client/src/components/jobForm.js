@@ -2,12 +2,12 @@ import React from 'react';
 import Axios from 'axios';
 import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 
-const Part = props => (
-    <div>
-        <h2><span className="label label-primary" style={{ float: "left", marginRight: "7px" }}>{props.partName}</span></h2>
-        <button data-id={props.id} className="btn btn-danger" onClick={props.removePart}>x</button>
-    </div>
-)
+// const Part = props => (
+//     <div>
+//         <h2><span className="label label-primary" style={{ float: "left", marginRight: "7px" }}>{props.partName}</span></h2>
+//         <button data-id={props.id} className="btn btn-danger" onClick={props.removePart}>x</button>
+//     </div>
+// )
 
 class JobForm extends React.Component {
     constructor(props) {

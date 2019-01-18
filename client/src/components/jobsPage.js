@@ -71,7 +71,6 @@ class JobPage extends React.Component {
     }
 
     viewAttachment = event => {
-        console.log(event.target.getAttribute('data-filepath'));
         firebase.storage().ref(event.target.getAttribute('data-filepath')).getDownloadURL()
             .then(url => window.open(url, '_blank'));
     }
