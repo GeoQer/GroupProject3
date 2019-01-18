@@ -31,7 +31,6 @@ router.get('/:id', (req, res) => {
 })
 
 router.put('/togglepermission', (req, res) => {
-    console.log('DATA: ', req.body.id, req.body.isAdmin);
     if (!req.body.id) {
         res.json({ err: 'Please provide a valid employee id' });
     }

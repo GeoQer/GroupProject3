@@ -52,6 +52,7 @@ class Login extends React.Component {
             sessionStorage.setItem('isAdmin', result.data.isAdmin);
             sessionStorage.setItem('uid', result.data.uid);
             sessionStorage.setItem('token', result.data.token);
+            sessionStorage.setItem('username', result.data.name);
             this.setState({isAdmin: result.data.isAdmin});
         });
     }

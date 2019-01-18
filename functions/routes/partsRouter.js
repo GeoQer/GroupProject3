@@ -12,7 +12,7 @@ router.post('/create', (req, res) => {
                         name: part.name || '',
                         stations: part.stations,
                         filename: part.filename,
-                    })
+                    }, {merge: true})
                         .then(response => res.json({ existingPartID: part.id }))
                 }
             })
