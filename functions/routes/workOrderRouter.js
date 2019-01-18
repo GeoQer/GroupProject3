@@ -41,11 +41,15 @@ router.get('/complete', (req, res) => {
         .catch(err => res.json({ err }))
 })
 
-router.put('/update', (req, res) => {
-    const Props = JSON.parse(req.body.props);
-    db.collection('work-orders').doc(req.body.id).set({ ...newProps }, { merge: true })
-        .then(() => res.json({ success: true }))
-        .catch(err => res.json({ err }));
+router.put('/update/:id', (req, res) => {
+    const id = req.params.id;
+    const currentStation = req.body.currentStation;
+
+    db.collection('work-orders').doc(id).set({
+        currentStation
+    }, {merge: true})
+    .then(() => res.json({success: true}))
+    .catch(err => res.json({ ...err }))
 });
 
 router.delete('/:id', (req, res) => {

@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import "./employee.css";
 const firebase = require('firebase/app');
 require('firebase/storage');
-require('firebase/firestore');
 
 function displayTime(time) {
   let hours = 0, minutes = 0, seconds = 0;
@@ -36,13 +35,9 @@ class Employee extends React.Component {
       workOrders: [],
       isLoggedIn: false,
       clockInterval: 0,
-      clock: 7198,
-      modalProps: {
-        show: false,
-        title: 'MODAL TITLE',
-        quantity: 100,
-        filepath: 'undefined/Screenshot (29).png',
-      }
+      clock: 0,
+      currentWorkOrder: {},
+      modalShow: false
     }
     Axios.get('/api/v1/stations/all')
       .then(result => this.setState({ stations: result.data }));
@@ -68,21 +63,38 @@ class Employee extends React.Component {
   }
 
   handleJobStart = (event) => {
-    const modalProps = Object.assign(this.state.modalProps);
-    modalProps.show = true;
-    const clockInterval = setInterval(() => {
-      this.setState(prevState => {
-        return { clock: prevState.clock + 1 }
-      })
-    }, 1000);
-    this.setState({ modalProps, clockInterval });
+    const id = event.target.getAttribute('data-id');
+    const arr = this.state.workOrders.slice(0);
+    let currentWorkOrder = {};
+    arr.forEach(workOrder => {
+      if (workOrder.id === id) {
+        Object.assign(currentWorkOrder, workOrder);
+      }
+    })
+    this.setState({ currentWorkOrder, clock: (currentWorkOrder.currentStation.time ? currentWorkOrder.currentStation.time : 0), modalShow: true }, () => {
+      const clockInterval = setInterval(() => {
+        this.setState(prevState => {
+          return { clock: prevState.clock + 1 }
+        })
+      }, 1000);
+      this.setState({ clockInterval });
+    })
   }
 
   handleJobStop = (event) => {
-    const modalProps = Object.assign(this.state.modalProps);
-    modalProps.show = false;
     clearInterval(this.state.clockInterval);
-    this.setState({ modalProps });
+    const currentStation = {};
+    Object.assign(currentStation, this.state.currentWorkOrder.currentStation);
+    currentStation.time = this.state.clock;
+    Axios.put(`/api/v1/workorders/update/${this.state.currentWorkOrder.id}`, {
+      currentStation
+    })
+    .then(() => {
+        Axios.get(`/api/v1/workorders/active/${currentStation.id}`)
+          .then(result => {
+            this.setState({workOrders: result.data, modalShow: false})
+          })
+    });
   }
 
   componentWillMount() {
@@ -121,24 +133,27 @@ class Employee extends React.Component {
       <div className='b'>
         <MenuBar stations={this.state.stations} handleStationSelect={this.handleStationSelect} handleLogout={this.handleLogout} />
 
+
         <div className="container">
-          {console.log(this.state.workOrders)}
           {this.state.workOrders.map(workOrder => <WorkOrder key={workOrder.id} id={workOrder.id} handleJobStart={this.handleJobStart} text={workOrder.notes} title={workOrder.part.name} quantity={workOrder.quantity} />)}
         </div>
-        <Modal show={this.state.modalProps.show} >
+
+
+        <Modal show={this.state.modalShow} >
           <Modal.Header >
-            <Modal.Title>Part: {this.state.modalProps.title}</Modal.Title>
+            <Modal.Title>Part: {this.state.currentWorkOrder.id ? this.state.currentWorkOrder.part.name : ''}</Modal.Title>
             <h3>{displayTime(this.state.clock)}</h3>
           </Modal.Header>
           <Modal.Body>
-            <h4>Quantity: {this.state.modalProps.quantity}</h4>
+            <h4>Quantity: {this.state.currentWorkOrder.id ? this.state.currentWorkOrder.quantity : ''}</h4>
           </Modal.Body>
           <Modal.Footer>
-            <button className="btn btn-primary" data-filepath={this.state.modalProps.filepath} onClick={this.viewAttachment}>View Attachment</button>
+            <button className="btn btn-primary" data-filepath={this.state.currentWorkOrder.id ? `${this.state.currentWorkOrder.part.id}/${this.state.currentWorkOrder.part.filename}` : ''} onClick={this.viewAttachment}>View Attachment</button>
             <button className="btn btn-danger" onClick={this.handleJobStop}>Stop</button>
             <button className="btn btn-success">Finish Job</button>
           </Modal.Footer>
         </Modal>
+
       </div>
     );
   }

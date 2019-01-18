@@ -8,7 +8,7 @@ const WorkOrder = (props) => (
                 <h2 className="card-title">{props.title}</h2>
                 <h4>Quantity: {props.quantity}</h4>
                 <p className="card-text"><strong>Notes: </strong>{props.text}</p>
-                <button value={props.id} type="button" className="btn btn-success" onClick={props.handleJobStart}>Start</button>
+                <button value={props.id} type="button" className="btn btn-success" onClick={props.handleJobStart} data-id={props.id}>Start</button>
             </div>
         </div>
     </div>
