@@ -2,7 +2,6 @@ import React from 'react';
 import EmployeeForm from './employeeForm';
 import { Route, Link } from 'react-router-dom';
 import Axios from 'axios';
-import { isatty } from 'tty';
 
 const ViewEmployees = props => (
     <div className="row">
@@ -31,21 +30,36 @@ class AdminEmployeePage extends React.Component {
         super(props);
         this.state = {
             employees: [],
-            interval: 0
+            interval: 0,
+            adminCount: 0,
         }
 
     }
 
     componentWillMount = () => {
         Axios.get('/api/v1/employees/all')
-            .then(result => this.setState({ employees: result.data }));
+            .then(result => this.setState({ employees: result.data }, () => {
+                let count = 0;
+                this.state.employees.forEach(employee => {
+                    if(employee.isAdmin)
+                        count++;
+                })
+                this.setState({adminCount: count})
+            }));
 
     }
 
     componentDidMount = () => {
         let x = setInterval(() => {
             Axios.get('/api/v1/employees/all')
-                .then(result => this.setState({ employees: result.data }))
+                .then(result => this.setState({ employees: result.data }, () => {
+                    let count = 0;
+                    this.state.employees.forEach(employee => {
+                        if(employee.isAdmin)
+                            count++;
+                    })
+                    this.setState({adminCount: count})
+                }))
         }, 15000);
         this.setState({ interval: x });
     }
@@ -64,8 +78,23 @@ class AdminEmployeePage extends React.Component {
     }
 
     handleTogglePermission = event => {
+
         const id = event.target.getAttribute('data-id');
         const isAdmin = event.target.getAttribute('data-is-admin');
+        let adminCount = this.state.adminCount;
+
+        if(isAdmin === 'true'){
+            if(adminCount <= 1){
+                alert('You must have at least one user with admin privileges');
+                return;
+            }
+            adminCount--;
+        }
+        else
+            adminCount++;
+        
+        this.setState({adminCount});
+
         Axios.put('/api/v1/employees/togglepermission', {
             id,
             isAdmin

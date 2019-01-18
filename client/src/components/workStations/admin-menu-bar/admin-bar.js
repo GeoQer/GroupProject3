@@ -4,12 +4,15 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import PartPage from '../../partsPage';
 import Axios from 'axios';
 import AdminEmployeePage from '../../adminEmployeePage';
+import StationsPage from '../../stationsPage';
 
 class AdminBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            ref: null
+            ref: null,
+            username: null
+
         }
     }
 
@@ -36,7 +39,7 @@ class AdminBar extends React.Component {
                     <Navbar inverse collapseOnSelect>
                         <Navbar.Header>
                             <Navbar.Brand>
-                                <a href="/" data-ref="admin" onClick={this.handleClick}>Admin Name</a>
+                                <a href="/" data-ref="admin" onClick={this.handleClick}>{sessionStorage.getItem('username')}</a>
                             </Navbar.Brand>
                             <Navbar.Toggle />
                         </Navbar.Header>
@@ -75,6 +78,7 @@ class AdminBar extends React.Component {
                     <Link to="/admin/employees/view" id="employees" />
                     <Link to="/admin" id="admin" />
                     <Link to="/" id="logout" />
+                    <Route path="/admin/stations" component={StationsPage} />
                     <Route path="/admin/parts" component={PartPage} />
                     <Route path="/admin/employees" component={AdminEmployeePage} />
                 </div>
