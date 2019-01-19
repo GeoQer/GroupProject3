@@ -69,7 +69,7 @@ class EmployeeForm extends React.Component {
         return (
             <div className="container">
                 <div className='row'>
-                    <div className='col-sm-4'>
+                    <div className='col-sm-6'>
                         <form id="employee-form" action="/api/v1/employees/test" method="POST">
                             <div className="input-group">
                                 <span className="input-group-addon" id="employee-number-addon">Employee ID</span>
@@ -85,7 +85,7 @@ class EmployeeForm extends React.Component {
                             </div>
                             <div className="input-group">
                                 <span className="input-group-addon" id="employee-password-addon">Employee Password</span>
-                                <input name="password" id="employee-password" onChange={this.handleInput} type="password" className="form-control" placeholder="Password" aria-describedby="part-password-addon" />
+                                <input name="password" id="employee-password" onChange={this.handleInput} type="password" className="form-control" placeholder="Password (minimum 6 characters)" aria-describedby="part-password-addon" />
                             </div>
                         </form>
                         <br />
