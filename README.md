@@ -21,10 +21,8 @@
 
     4. Admin login will allow you to update the entire system. 
 
-## To view our app and associated code click the link below:
+## To view our app and associated code click the link:  https://project-runner-f1bdc.firebaseapp.com
     
-    https://project-runner-f1bdc.firebaseapp.com
-
 ## Assignment Requirements: 
 
 - `Must use ReactJS.`
