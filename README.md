@@ -9,13 +9,16 @@
     2. Workstations are sequentially assigned in order of work to be done.
 
     3. Workflow is assigned for maximum effeciency and cannot be changed.
-    
+
     4. Job documentation is digitally attached to each job to further enhance effenciency.
 
   ### The app has authentication to both employee (workflow) and admin (job planning/access):
     1. There is a unified login page for both Administrator and Employees.
+
     2. Administrators can create, assign and update jobs/workflow.
+
     3. Employees can see work assigned to their workstation and what must be accomplished.
+    
     4. Admin login will allow you to update the entire system. 
 
 
