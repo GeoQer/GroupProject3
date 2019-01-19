@@ -45,7 +45,7 @@
 
    `Flowchart of App`
 
-   ![Alt text](.client/src/components/images/flowChart.png?raw=true "Optional Title")
+   ![Alt text](/client/src/components/images/flowChart.png "Optional Title")
 
 
 
