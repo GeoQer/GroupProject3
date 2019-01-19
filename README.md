@@ -2,11 +2,15 @@
 
 ## Project Description:
  Our project is a workflow control app that attempts to streamline all workflow in 
- a shop by:
+ a shop:
 
   * This app will create a high level of effenciency within a shop environment by:
     1. Assigning jobs based on the work to be done.
     2. Workstations are sequentially assigned in order of work to be done.
+    3. Workflow is assigned for maximum effeciency and cannot be changed.
+    4. Job documentation is digitally attached to each job to further enhance effenciency.
+
+  * The app allows 
 
 
 ## Assignment Requirements: 
@@ -29,6 +33,13 @@
 - `Express`
 
 ## Additional Technologies Used:
+
+The following `Additional Technologies` are used `with approval` and provide 
+not only new technologies for this assignment, but also override some of the
+requirements for this assignment. In particular, we are not backed by a MySQL
+or MongoDB Database or a Sequelize or Mongoose ORM. As well as not being deployed
+using Heroku. All of these requirements are being met by all of the `Firebase Componants`
+listed below:
 
 - `Cloud Firestore` -is a NoSQL document database that lets you easily store, 
    sync, and query data for your mobile and web apps - at global scale.
