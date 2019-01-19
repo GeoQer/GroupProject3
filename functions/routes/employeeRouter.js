@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../resources/db');
 
 router.get('/all', (req, res) => {
-    db.collection('users').get()
+    db.collection('users').where('isArchived', '==', false).get()
         .then(docs => {
             let arr = [];
             docs.forEach(doc => arr.push({...doc.data(), id: doc.id}));
@@ -52,4 +52,17 @@ router.put('/togglepermission', (req, res) => {
     }
 })
 
+router.put('/archive/:id', (req, res) => {
+    db.collection('users').doc(req.params.id).update({
+        isArchived: true
+    })
+    .then(() => res.json({success: true}))
+    .catch(err => res.json({ err }))
+})
+
+router.delete('/delete/:id', (req, res) => {
+    db.collection('users').doc(req.params.id).delete()
+    .then(() => res.json({success: true}))
+    .catch(err => res.json({ err }))
+})
 module.exports = router;
