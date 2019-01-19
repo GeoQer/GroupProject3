@@ -43,6 +43,9 @@
    single-page web app, a mobile app landing page or a progressive web app without 
    all the hassle.
 
+   `Flowchart of App`
+
+   ![Alt text](/src/components/images/flowChart.png?raw=true "Optional Title")
 
 
 
