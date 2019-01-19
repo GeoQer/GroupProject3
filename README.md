@@ -23,7 +23,7 @@
 
 ## To view our app and associated code click the link below:
     
-    [a link](https://project-runner-f1bdc.firebaseapp.com/)
+    https://project-runner-f1bdc.firebaseapp.com/
 
 ## Assignment Requirements: 
 
