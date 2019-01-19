@@ -10,7 +10,11 @@
     3. Workflow is assigned for maximum effeciency and cannot be changed.
     4. Job documentation is digitally attached to each job to further enhance effenciency.
 
-  * The app allows 
+  * The app has authentication to both employee (workflow) and admin (job planning/access):
+    1. There is a unified login page for both Administrator and Employees.
+    2. Administrators can create, assign and update jobs/workflow.
+    3. Employees can see work assigned to their workstation and what must be accomplished.
+    4. Admin login will allow you to update the entire system. 
 
 
 ## Assignment Requirements: 
@@ -34,7 +38,7 @@
 
 ## Additional Technologies Used:
 
-The following `Additional Technologies` are used `with approval` and provide 
+The following `Additional Technologies` are used **with approval** and provide 
 not only new technologies for this assignment, but also override some of the
 requirements for this assignment. In particular, we are not backed by a MySQL
 or MongoDB Database or a Sequelize or Mongoose ORM. As well as not being deployed
