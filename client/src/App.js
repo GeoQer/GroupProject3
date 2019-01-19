@@ -3,6 +3,7 @@ import Employee from "./components/employee";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Admin from "./components/admin";
 import LoginPage from "./components/loginPage";
+import Notfound from "./components/Notfound";
 
 const App = (props) => {
     return (
@@ -10,9 +11,9 @@ const App = (props) => {
             <div>
                 <Switch>
                     <Route exact path="/" component={LoginPage} />
-                    <Route exact path="/admin" component={Admin} />
+                    <Route path="/admin" component={Admin} />
                     <Route exact path="/employee" component={Employee} />
-                    <Route component={() => <h1>404: Page Not Found, go back you<strong> big idiot!</strong></h1>} />
+                    <Route component={Notfound}/>
                 </Switch>
             </div>
         </Router>
