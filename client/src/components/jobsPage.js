@@ -47,11 +47,11 @@ class JobPage extends React.Component {
     }
 
     componentDidMount = () => {
-        Axios.get('/api/v1/workorders/all')
+        Axios.get('/api/v1/workorders/active')
             .then(result => this.setState({jobs: result.data}));
     
         let x = setInterval(() => {
-            Axios.get('/api/v1/workorders/all')
+            Axios.get('/api/v1/workorders/active')
             .then(result => this.setState({jobs: result.data}));
         }, 15000);
         this.setState({interval: x});    
