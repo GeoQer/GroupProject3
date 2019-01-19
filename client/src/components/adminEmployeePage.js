@@ -5,7 +5,7 @@ import Axios from 'axios';
 
 const ViewEmployees = props => (
     <div className="row">
-        {props.employees.map(employee => <EmployeeCard key={employee.id} title={employee.name} id={employee.id} email={employee.email} isAdmin={employee.isAdmin} handleTogglePermission={props.handleTogglePermission} />)}
+        {props.employees.map(employee => <EmployeeCard key={employee.id} title={employee.name} id={employee.id} email={employee.email} isAdmin={employee.isAdmin} handleTogglePermission={props.handleTogglePermission} handleDelete={props.handleDelete} />)}
     </div>
 )
 
@@ -19,6 +19,7 @@ const EmployeeCard = props => (
             </div>
             <div>
                 <button className={`btn ${props.isAdmin ? 'btn-danger' : 'btn-success'}`} onClick={props.handleTogglePermission} data-id={props.id} data-is-admin={props.isAdmin}>{props.isAdmin ? 'Revoke Admin' : 'Make Admin'}</button>
+                <button style={{marginLeft: "10px"}} className="btn btn-danger" data-id={props.id} onClick={props.handleDelete}>Delete</button>
             </div>
         </div>
     </div>
@@ -77,6 +78,15 @@ class AdminEmployeePage extends React.Component {
         target.parentElement.setAttribute('class', 'active tab-link');
     }
 
+    handleDelete = event => {
+        const id = event.target.getAttribute('data-id');
+        Axios.delete(`/api/v1/employees/delete/${id}`)
+            .then(result => {
+                Axios.get('/api/v1/employees/all')
+                    .then(result => this.setState({parts: result.data}))
+            });
+    }
+
     handleTogglePermission = event => {
 
         const id = event.target.getAttribute('data-id');
@@ -114,7 +124,7 @@ class AdminEmployeePage extends React.Component {
             <br />
             <br />
             <Route path="/admin/employees/create" component={EmployeeForm} />
-            <Route path="/admin/employees/view" component={() => <ViewEmployees employees={this.state.employees} handleTogglePermission={this.handleTogglePermission} />} />
+            <Route path="/admin/employees/view" component={() => <ViewEmployees employees={this.state.employees} handleTogglePermission={this.handleTogglePermission} handleDelete={this.handleDelete} />} />
         </div>
     )
 }

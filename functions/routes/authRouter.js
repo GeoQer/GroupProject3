@@ -14,6 +14,8 @@ router.post('/create', (req, res) => {
                 name: userInfo.name,
                 email: userInfo.email || 'No Email',
                 isAdmin: false,
+                isArchived: false,
+                disabled: false
             })
             .then(doc => res.json({success: true, uid: user.user.uid}))
             .catch(err => {console.log(err); json.res({err})})
@@ -60,4 +62,13 @@ router.post('/verify', (req, res) => {
     }
 })
 
+router.delete('/delete', (req, res) => {
+   auth.deleteUser()
+   .then(function(){
+       console.log('successfully deleted user');
+   })
+   .catch(function(error) {
+       console.log("Error deleting User :", error);
+   })
+});
 module.exports = router;
