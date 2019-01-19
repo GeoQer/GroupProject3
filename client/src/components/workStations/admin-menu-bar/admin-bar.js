@@ -6,6 +6,7 @@ import Axios from 'axios';
 import AdminEmployeePage from '../../adminEmployeePage';
 import StationsPage from '../../stationsPage';
 import JobPage from '../../jobsPage';
+import Overview from '../../Overview';
 
 class AdminBar extends React.Component {
     constructor(props) {
@@ -83,6 +84,7 @@ class AdminBar extends React.Component {
                     <Route path="/admin/parts" component={PartPage} />
                     <Route path="/admin/employees" component={AdminEmployeePage} />
                     <Route path="/admin/jobs" component={JobPage} />
+                    <Route exact path="/admin" component={Overview} />
                 </div>
             </Router>
         );

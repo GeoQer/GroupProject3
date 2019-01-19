@@ -10,7 +10,7 @@ const App = (props) => {
             <div>
                 <Switch>
                     <Route exact path="/" component={LoginPage} />
-                    <Route path="/admin" component={Admin} />
+                    <Route exact path="/admin" component={Admin} />
                     <Route exact path="/employee" component={Employee} />
                     <Route component={() => <h1>404: Page Not Found, go back you<strong> big idiot!</strong></h1>} />
                 </Switch>

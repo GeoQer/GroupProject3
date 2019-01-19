@@ -3,7 +3,6 @@ import AdminBar from "./workStations/admin-menu-bar/index";
 import Axios from 'axios';
 import { Link } from 'react-router-dom';
 import "./admin.css";
-import Overview from './Overview';
 const firebase = require('firebase/app');
 require('firebase/auth');
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
@@ -44,51 +43,6 @@ class Admin extends React.Component {
         console.log(err);
       })
 
-    Axios.get('/api/v1/stations/all')
-      .then(result => this.setState({ stations: result.data }))
-
-    Axios.get('/api/v1/workorders/active')
-      .then(result => this.setState({ workOrders: result.data }))
-
-  }
-
-  componentDidMount = () => {
-    if (this.state.workOrders.length < 1 || this.state.stations.length < 1) {
-      setTimeout(() => {
-
-        console.log(this.state);
-
-        const stations = this.state.stations.slice(0);
-        const indices = [];
-
-        stations.forEach((station, index) => {
-          let count = 0;
-          this.state.workOrders.forEach(workOrder => {
-            if (workOrder.currentStation.id === station.id)
-              count++;
-          })
-          if (count === 0) {
-            indices.push(index)
-          }
-        })
-
-        indices.forEach(index => {
-          stations[index] = null;
-        })
-
-        const newStations = [];
-
-        stations.forEach(station => {
-          if(station != null)
-            newStations.push(station);
-        })
-
-
-        this.setState({ stations: newStations });
-
-      }, 1000)
-    }
-
   }
 
   render() {
@@ -116,9 +70,6 @@ class Admin extends React.Component {
       return (
         <div>
           <AdminBar stations={this.state.stations} handleStationSelect={this.handleStationSelect} />
-          <div className="container">
-            <Overview stations={this.state.stations} workOrders={this.state.workOrders} />
-          </div>
         </div>
       );
     }
