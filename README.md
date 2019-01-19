@@ -1,8 +1,7 @@
 # Group Project 3 - Shop Workload App
 
 ## Project Description:
- Our project is a workflow control app that attempts to streamline all workflow in 
- a shop.
+   `Our project is a workflow control app that attempts to streamline all workflow in a shop`
 
   * This app will create a high level of effenciency within a shop environment by:
     1. Assigning jobs based on the work to be done.
