@@ -61,9 +61,10 @@ listed below:
    single-page web app, a mobile app landing page or a progressive web app without 
    all the hassle.
 
-   
 
-   `Flowchart of App`
+
+## Flowchart of App
+
 
    ![Alt text](/client/src/components/images/flowChart.png "Optional Title")
 
