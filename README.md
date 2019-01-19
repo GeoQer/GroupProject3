@@ -5,8 +5,11 @@
 
   ### This app will create a high level of effenciency within a shop environment by:
     1. Assigning jobs based on the work to be done.
+
     2. Workstations are sequentially assigned in order of work to be done.
+
     3. Workflow is assigned for maximum effeciency and cannot be changed.
+    
     4. Job documentation is digitally attached to each job to further enhance effenciency.
 
   ### The app has authentication to both employee (workflow) and admin (job planning/access):
