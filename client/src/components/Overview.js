@@ -1,5 +1,26 @@
 import React from 'react';
 import Axios from 'axios';
+import { Modal } from 'react-bootstrap';
+
+function displayTime(time) {
+    let hours = 0, minutes = 0, seconds = 0;
+
+    hours = Math.floor(time / 60 / 60);
+    if (hours < 10)
+        hours = `0${hours}`;
+
+    minutes = time >= 3600 ? Math.floor((time % 3600) / 60) : Math.floor(time / 60);
+    if (minutes < 10)
+        minutes = `0${minutes}`;
+
+    seconds = time % 60;
+    if (seconds < 10)
+        seconds = `0${seconds}`
+
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+let sum = 0;
 
 class Overview extends React.Component {
 
@@ -8,6 +29,8 @@ class Overview extends React.Component {
         this.state = {
             stations: [],
             workOrders: [],
+            currentWorkOrder: null,
+            showModal: false,
             activeSations: false
         }
 
@@ -47,6 +70,17 @@ class Overview extends React.Component {
             }))
     }
 
+    viewHistory = event => {
+        const id = event.target.getAttribute('data-id');
+        sum = 0;
+        this.state.workOrders.forEach(workOrder => {
+            if (workOrder.id === id)
+                this.setState({ currentWorkOrder: workOrder, showModal: true }, () => console.log(this.state.currentWorkOrder.history))
+        })
+    }
+
+    handleClose = () => this.setState({ showModal: false });
+
     render(props) {
         if (!this.state.activeStations)
             return 'Loading...'
@@ -71,10 +105,11 @@ class Overview extends React.Component {
                                                     <td>{workOrder.id.slice(workOrder.id.length - 4, workOrder.id.length)}</td>
                                                     <td>{workOrder.part.name}</td>
                                                     <td>{workOrder.quantity}</td>
+                                                    <td><button className="btn btn-primary" data-id={workOrder.id} onClick={this.viewHistory}>View History</button></td>
                                                 </tr>
                                             )
                                         else
-                                                return '';
+                                            return null;
                                     })}
                                 </tbody>
                             </table>
@@ -82,6 +117,38 @@ class Overview extends React.Component {
                     )
                 })
                 }
+                <Modal show={this.state.showModal} onHide={this.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Job History</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {this.state.currentWorkOrder ? (
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Station</th>
+                                        <th>Employee Name</th>
+                                        <th>Time</th>
+                                        <th>Total Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.currentWorkOrder.history.map((historyItem, index) => {
+                                        sum += historyItem.time;
+                                        return (
+                                            <tr key={index}>
+                                                <td>{historyItem.stationName}</td>
+                                                <td>{historyItem.employeeName}</td>
+                                                <td>{displayTime(historyItem.time)}</td>
+                                                <td>{displayTime(sum)}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        ) : '' }
+                    </Modal.Body>
+                </Modal>
             </div>
         )
     }
