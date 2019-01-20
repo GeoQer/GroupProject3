@@ -90,6 +90,8 @@ class Employee extends React.Component {
 
     Axios.put(`api/v1/workorders/next`, {
       currentWorkOrder,
+      uid: sessionStorage.getItem('uid'),
+      username: sessionStorage.getItem('username')
     })
     .then(result => {
       console.log(result.data);
@@ -106,7 +108,9 @@ class Employee extends React.Component {
     Object.assign(currentStation, this.state.currentWorkOrder.currentStation);
     currentStation.time = this.state.clock;
     Axios.put(`/api/v1/workorders/update/${this.state.currentWorkOrder.id}`, {
-      currentStation
+      currentStation,
+      uid: sessionStorage.getItem('uid'),
+      username: sessionStorage.getItem('username')
     })
     .then(() => {
         Axios.get(`/api/v1/workorders/active/${currentStation.id}`)

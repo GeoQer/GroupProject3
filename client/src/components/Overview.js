@@ -73,6 +73,8 @@ class Overview extends React.Component {
                                                     <td>{workOrder.quantity}</td>
                                                 </tr>
                                             )
+                                        else
+                                                return '';
                                     })}
                                 </tbody>
                             </table>
