@@ -60,9 +60,10 @@ router.delete('/:id', (req, res) => {
 
 router.post('/create', (req, res) => {
     const job = req.body.job
+    const dateCreated = new Date();
     db.collection('parts').doc(req.body.job.part.id).get()
         .then(doc => {
-            db.collection('work-orders').add({ ...job, part: { ...doc.data(), id: doc.id }, currentStation: doc.data().stations[0], isComplete: false, currentStationIndex: 0 })
+            db.collection('work-orders').add({ ...job, part: { ...doc.data(), id: doc.id }, currentStation: doc.data().stations[0], isComplete: false, currentStationIndex: 0, dateCreated })
                 .then(doc => res.json({ id: doc.id }))
                 .catch(err => res.json({ err }));
         });
@@ -76,9 +77,11 @@ router.put('/next', (req, res) => {
     currentWorkOrder.part.stations[currentWorkOrder.currentStationIndex] = currentWorkOrder.currentStation;
 
     if(currentWorkOrder.currentStationIndex === currentWorkOrder.part.stations.length - 1){
+       const dateCompleted = new Date();
         db.collection('work-orders').doc(currentWorkOrder.id).set({
             ...currentWorkOrder,
-            isComplete: true
+            isComplete: true,
+            dateCompleted
         }, {merge: true})
     }
     else{
