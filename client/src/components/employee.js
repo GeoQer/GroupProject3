@@ -37,7 +37,8 @@ class Employee extends React.Component {
       clockInterval: 0,
       clock: 0,
       currentWorkOrder: {},
-      modalShow: false
+      modalShow: false,
+      err: ''
     }
     Axios.get('/api/v1/stations/all')
       .then(result => {

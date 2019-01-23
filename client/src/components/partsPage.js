@@ -29,8 +29,8 @@ const PartCard = props => (
                 <p><strong>Stations: </strong></p>
                 {props.stations.map((station, index) => <p key={`${station.id}${index}`}>{station.name}</p>)}
                 <button className="btn btn-primary" data-filepath={props.filepath} onClick={props.viewAttachment}>View Attachment</button>
-                <button style={{marginLeft: "10px"}} className="btn btn-warning" data-id={props.id} onClick={props.handleEdit}>Edit</button>
-                <button style={{marginLeft: "10px"}} className="btn btn-danger" data-id={props.id} onClick={props.handleDelete}>Delete</button>
+                <button style={{ marginLeft: "10px" }} className="btn btn-warning" data-id={props.id} onClick={props.handleEdit}>Edit</button>
+                <button style={{ marginLeft: "10px" }} className="btn btn-danger" data-id={props.id} onClick={props.handleDelete}>Delete</button>
             </div>
         </div>
     </div>
@@ -42,29 +42,37 @@ class PartPage extends React.Component {
         super(props);
         this.state = {
             parts: [],
-            interval: 0
+            interval: 0,
+            err: ''
         }
 
     }
 
     componentWillMount = () => {
         Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}))
+            .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err });
+                    return;
+                }
+                this.setState({ parts: result.data })
+            })
+            .catch(err => this.setState({ err }))
     }
 
     componentDidMount = () => {
         let x = setInterval(() => {
             Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}))
+                .then(result => this.setState({ parts: result.data }))
 
         }, 15000);
-        this.setState({interval: x});    
+        this.setState({ interval: x });
     }
 
     componentWillUnmount = () => {
         clearInterval(this.state.interval);
     }
-    
+
 
     handleTabSelect = (event) => {
         const target = event.target;
@@ -84,22 +92,42 @@ class PartPage extends React.Component {
         const id = event.target.getAttribute('data-id');
         Axios.get(`/api/v1/parts/edit/${id}`)
             .then(result => {
+                if(result.data.err){
+                    this.setState({err: result.data.err});
+                    return;
+                }
                 sessionStorage.setItem('editPart', JSON.stringify(result.data));
                 document.getElementById('create-link').click();
-            });
+            })
+            .catch(err => this.setState({ err }))
     }
 
     handleDelete = event => {
         const id = event.target.getAttribute('data-id');
         Axios.put(`/api/v1/parts/archive/${id}`)
             .then(result => {
+                if(result.data.err){
+                    this.setState({err: result.data.err})
+                    return;
+                }
                 Axios.get('/api/v1/parts/all')
-                    .then(result => this.setState({parts: result.data}))
-            });
+                    .then(result => {
+                        if(result.data.err){
+                            this.setState({err: result.data.err});
+                            return;
+                        }
+                        this.setState({ parts: result.data })
+                    })
+                    .catch(err => this.setState({ err }))
+            })
+            .catch(err => this.setState({ err }))
     }
 
     render = props => (
         <div className="container">
+            <div className="row">
+                <h1 style={{color: 'red'}}>{this.state.err}</h1>
+            </div>
             <ul className="nav nav-pills">
                 <li role="presentation" className="active tab-link" onClick={this.handleTabSelect}><Link to="/admin/parts/view">View</Link></li>
                 <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link id="create-link" to="/admin/parts/create">Create</Link></li>
