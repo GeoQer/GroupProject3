@@ -27,19 +27,19 @@ class JobForm extends React.Component {
         selector.selectedIndex = 0;
         document.getElementById('notes').value = '';
         document.getElementById('qty').value = '';
-        this.setState({job: {part: 'Selecta a Part', quantity: 0, notes: ''}});
+        this.setState({ job: { part: 'Selecta a Part', quantity: 0, notes: '' } });
     }
 
     componentWillMount = () => {
         Axios.get('/api/v1/parts/all')
-            .then(result => this.setState({parts: result.data}))
+            .then(result => this.setState({ parts: result.data }))
     }
 
     handleSelectChange = (event) => {
         const id = event.target.value;
         const name = event.target.children[event.target.selectedIndex].text;
         const job = Object.assign(this.state.job);
-        job.part = {id, name};
+        job.part = { id, name };
         this.setState({ job, errMsg: '' });
     }
 
@@ -52,16 +52,16 @@ class JobForm extends React.Component {
     }
 
     handleSubmit = async () => {
-        if(this.state.job.part === 'Select a Part' || this.state.job.quantity < 1){
-            this.setState({errMsg: 'Please make sure you have selected a Part and set a Quantity'})
+        if (this.state.job.part === 'Select a Part' || this.state.job.quantity < 1) {
+            this.setState({ errMsg: 'Please make sure you have selected a Part and set a Quantity' })
             return;
         }
         Axios.post('/api/v1/workorders/create', {
             job: this.state.job
         })
-        .then(result => {
-            this.clear();
-        })
+            .then(result => {
+                this.clear();
+            })
     }
 
     render() {
@@ -74,6 +74,11 @@ class JobForm extends React.Component {
                             <span name="id" id="job-id" className="form-control" aria-describedby="job-number-addon">{this.state.id ? this.state.id : 'New Part'}</span>
                         </div>
                         <br />
+                        <ul className="nav nav-pills">
+                            <li role="presentation" className="active tab-link" onClick={this.handleJobTypeSelect}><a href="#">Part</a></li>
+                            <li role="presentation" className="tab-link" onClick={this.handleJobTypeSelect}><a href="#">Assembly</a></li>
+                        </ul>
+                        <br />
                         <FormGroup>
                             <ControlLabel>Parts</ControlLabel>
                             <FormControl componentClass="select" placeholder="Select a part" onChange={this.handleSelectChange} id="selector">
@@ -85,9 +90,9 @@ class JobForm extends React.Component {
                             <span className="input-group-addon" id="job-quantity-addon">Quantity</span>
                             <input name="quantity" type="number" className="form-control" id="qty" onChange={this.handleInput} />
                         </div>
-                        <div className="input-group" style={{marginTop: '10px'}}>
+                        <div className="input-group" style={{ marginTop: '10px' }}>
                             <span className="input-group-addon" id="text-area-addon">Notes</span>
-                            <textarea name="notes" id="notes" onChange={this.handleInput} style={{height: '120px'}} className="form-control" aria-describedby="text-area-addon"></textarea>
+                            <textarea name="notes" id="notes" onChange={this.handleInput} style={{ height: '120px' }} className="form-control" aria-describedby="text-area-addon"></textarea>
                         </div>
                     </form>
                 </div>
@@ -97,7 +102,7 @@ class JobForm extends React.Component {
                     <button className="btn btn-danger" onClick={this.clear}>Clear</button>
                 </div>
                 <div className="row">
-                    <h3 style={{color: 'red'}}>{this.state.errMsg}</h3>
+                    <h3 style={{ color: 'red' }}>{this.state.errMsg}</h3>
                 </div>
             </div>
         )
