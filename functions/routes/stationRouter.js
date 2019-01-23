@@ -17,7 +17,9 @@ router.post('/create', (req, res) => {
         isArchived: false
     })
     .then(doc => res.json({...doc.data(), id: doc.id}))
-    .catch(err => res.json({ ...err }))
+    .catch(err => 
+        alert(`Error occurred, please refer to error code ${err}`),
+        res.json({ ...err }))
 })
 
 router.put('/remove', (req, res) => {
@@ -26,6 +28,8 @@ router.put('/remove', (req, res) => {
         isArchived: true
     })
     .then(() => res.json({success: true}))
-    .catch(err => res.json({...err}))
+    .catch(err => 
+        alert(`Error occurred, please refer to error code ${err}`),
+        res.json({...err}))
 })
 module.exports = router;

@@ -9,7 +9,9 @@ router.get('/all', (req, res) => {
             docs.forEach(doc => arr.push({...doc.data(), id: doc.id}));
             res.json(arr);
         })
-        .catch(err => res.json({ err }));
+        .catch(err => 
+            alert(`Error occurred, please refer to error code ${err}`),
+            res.json({ err }));
 })
 
 router.get('/:id', (req, res) => {
@@ -27,27 +29,34 @@ router.get('/:id', (req, res) => {
                 }
             });
         })
-        .catch(err => {console.log(err); res.json({ err })});
+        .catch(err => {console.log(err);
+            alert(`Error occurred, please refer to error code ${err}`);
+            res.json({ err })});
 })
 
 router.put('/togglepermission', (req, res) => {
     if (!req.body.id) {
+        alert(`Error occurred, please refer to error code ${err}`);
         res.json({ err: 'Please provide a valid employee id' });
     }
     else if (req.body.isAdmin != "true" && req.body.isAdmin != "false") {
+        alert(`Error occurred, please refer to error code ${err}`);
         res.json({ err: 'Please provide an "isAdmin" parameter with a boolean data type' })
     }
     else {
         db.collection('users').doc(req.body.id).get()
             .then(doc => {
                 if(!doc.exists){
+                    alert(`Error occurred, please refer to error code ${err}`);
                     res.json({err: 'Employee not found'});
                     return;
                 }
 
                 db.collection('users').doc(req.body.id).set({ isAdmin: (req.body.isAdmin === 'true' ? false : true) }, { merge: true })
                 .then(() => res.json({ success: true }))
-                .catch(err => res.json({ err }));
+                .catch(err => 
+                    alert(`Error occurred, please refer to error code ${err}`),
+                    res.json({ err }));
             })
     }
 })
@@ -57,12 +66,16 @@ router.put('/archive/:id', (req, res) => {
         isArchived: true
     })
     .then(() => res.json({success: true}))
-    .catch(err => res.json({ err }))
+    .catch(err => 
+        alert(`Error occurred, please refer to error code ${err}`),
+        res.json({ err }))
 })
 
 router.delete('/delete/:id', (req, res) => {
     db.collection('users').doc(req.params.id).delete()
     .then(() => res.json({success: true}))
-    .catch(err => res.json({ err }))
+    .catch(err => 
+        alert(`Error occurred, please refer to error code ${err}`),
+        res.json({ err }))
 })
 module.exports = router;

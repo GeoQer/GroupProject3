@@ -11,7 +11,9 @@ router.get('/all', (req, res) => {
             docs.forEach(doc => arr.push({ ...doc.data(), id: doc.id }));
             res.json(arr);
         })
-        .catch(err => res.json({ err }));
+        .catch(err => 
+            alert(`Error occurred, please refer to error code ${err}`),
+            res.json({ err }));
 })
 
 router.get('/active', (req, res) => {
@@ -40,7 +42,9 @@ router.get('/complete', (req, res) => {
             docs.forEach(doc => arr.push({ ...doc.data(), id: doc.id }));
             res.json(arr);
         })
-        .catch(err => res.json({ err }))
+        .catch(err => 
+            alert(`Error occurred, please refer to error code ${err}`),
+            res.json({ err }))
 })
 
 router.put('/update/:id', (req, res) => {
@@ -61,13 +65,17 @@ router.put('/update/:id', (req, res) => {
         history: firebase.firestore.FieldValue.arrayUnion(newHistoryItem)
     })
         .then(() => res.json({ success: true }))
-        .catch(err => res.json({ ...err }))
+        .catch(err => 
+            alert(`Error occurred, please refer to error code ${err}`),
+            res.json({ ...err }))
 });
 
 router.delete('/:id', (req, res) => {
     db.collection('work-orders').doc(req.params.id).delete()
         .then(() => res.json({ success: true }))
-        .catch(err => res.json({ err }));
+        .catch(err => 
+            alert(`Error occurred, please refer to error code ${err}`),
+            res.json({ err }));
 })
 
 router.post('/create', (req, res) => {
@@ -76,7 +84,9 @@ router.post('/create', (req, res) => {
         .then(doc => {
             db.collection('work-orders').add({ ...job, part: { ...doc.data(), id: doc.id }, currentStation: doc.data().stations[0], isComplete: false, currentStationIndex: 0, dateCreated: firebase.firestore.FieldValue.serverTimestamp(), history: [] })
                 .then(doc => res.json({ id: doc.id }))
-                .catch(err => res.json({ err }));
+                .catch(err => 
+                    alert(`Error occurred, please refer to error code ${err}`),
+                    res.json({ err }));
         });
 })
 

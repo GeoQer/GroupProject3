@@ -28,7 +28,9 @@ router.post('/create', (req, res) => {
             .then(response => {
                 res.json({ newPartID: response.id })
             })
-            .catch(err => res.json({ err }))
+            .catch(err => 
+                alert(`Error occurred, please refer to error code ${err}`),
+                res.json({ err }))
 
     }
 })
@@ -45,6 +47,7 @@ router.get('/edit/:id', (req, res) => {
         })
         .catch(err => {
             console.log(err);
+            alert(`Error occurred, please refer to error code ${err}`);
             res.json({ err });
         })
 })
@@ -65,7 +68,9 @@ router.put('/archive/:id', (req, res) => {
         isArchived: true
     })
     .then(() => res.json({success: true}))
-    .catch(err => res.json({ err }))
+    .catch(err => 
+        alert(`Error occurred, please refer to error code ${err}`),
+        res.json({ err }))
 })
 
 module.exports = router;
