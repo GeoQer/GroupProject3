@@ -40,26 +40,46 @@ class Employee extends React.Component {
       modalShow: false
     }
     Axios.get('/api/v1/stations/all')
-      .then(result => this.setState({ stations: result.data }));
+      .then(result => {
+        if (result.data.err) {
+          this.setState({ err: result.data.err })
+          return;
+        }
+
+        this.setState({ stations: result.data })
+      })
+      .catch(err => this.setState({ err }))
   }
 
   handleStationSelect = (event) => {
     Axios.get(`/api/v1/workorders/active/${event.target.getAttribute('data-id')}`)
       .then(result => {
+        if (result.data.err) {
+          this.setState({ err: result.data.err })
+          return;
+        }
+
         const arr = [];
         result.data.forEach(workOrder => arr.push({ ...workOrder, inProgress: false }));
         this.setState({ workOrders: arr });
-      });
+      })
+      .catch(err => this.setState({ err }))
   }
 
   handleLogout = () => {
     Axios.post('/api/v1/auth/logout')
       .then(result => {
+        if (result.data.err) {
+          this.setState({ err: result.data.err })
+          return;
+        }
+
         if (result.data.signedOut === true) {
           sessionStorage.clear();
           window.location.replace('/');
         }
-      });
+      })
+      .catch(err => this.setState({ err }))
   }
 
   handleJobStart = (event) => {
@@ -93,13 +113,24 @@ class Employee extends React.Component {
       uid: sessionStorage.getItem('uid'),
       username: sessionStorage.getItem('username')
     })
-    .then(result => {
-      console.log(result.data);
-      Axios.get(`/api/v1/workorders/active/${this.state.currentWorkOrder.currentStation.id}`)
-        .then(result => {
-          this.setState({workOrders: result.data, modalShow: false, clock: 0})
-        })
-    })
+      .then(result => {
+        if (result.data.err) {
+          this.setState({ err: result.data.err })
+          return;
+        }
+
+        Axios.get(`/api/v1/workorders/active/${this.state.currentWorkOrder.currentStation.id}`)
+          .then(result => {
+            if (result.data.err) {
+              this.setState({ err: result.data.err })
+              return;
+            }
+
+            this.setState({ workOrders: result.data, modalShow: false, clock: 0 })
+          })
+          .catch(err => this.setState({ err }))
+      })
+      .catch(err => this.setState({ err }))
   }
 
   handleJobStop = (event) => {
@@ -112,12 +143,24 @@ class Employee extends React.Component {
       uid: sessionStorage.getItem('uid'),
       username: sessionStorage.getItem('username')
     })
-    .then(() => {
+      .then(result => {
+        if (result.data.err) {
+          this.setState({ err: result.data.err })
+          return;
+        }
+
         Axios.get(`/api/v1/workorders/active/${currentStation.id}`)
           .then(result => {
-            this.setState({workOrders: result.data, modalShow: false})
+            if (result.data.err) {
+              this.setState({ err: result.data.err })
+              return;
+            }
+
+            this.setState({ workOrders: result.data, modalShow: false })
           })
-    });
+          .catch(err => this.setState({ err }))
+      })
+      .catch(err => this.setState({ err }))
   }
 
   componentWillMount() {
@@ -125,6 +168,11 @@ class Employee extends React.Component {
       token: sessionStorage.getItem('token')
     })
       .then(result => {
+        if (result.data.err) {
+          this.setState({ err: result.data.err })
+          return;
+        }
+
         if (result.data.uid === sessionStorage.getItem('uid')) {
           this.setState({ isLoggedIn: true })
         }
@@ -132,9 +180,7 @@ class Employee extends React.Component {
           sessionStorage.clear();
         }
       })
-      .catch(err => {
-        console.log(err);
-      })
+      .catch(err => this.setState({ err }))
   }
 
   viewAttachment = event => {
@@ -158,9 +204,13 @@ class Employee extends React.Component {
 
 
         <div className="container">
-          {this.state.workOrders.map(workOrder => <WorkOrder key={workOrder.id} id={workOrder.id} handleJobStart={this.handleJobStart} text={workOrder.notes} title={workOrder.part.name} quantity={workOrder.quantity} />)}
+          <div className="row">
+            <h2 style={{ color: 'red' }}>{this.state.err}</h2>
+          </div>
+          <div className="row">
+            {this.state.workOrders.map(workOrder => <WorkOrder key={workOrder.id} id={workOrder.id} handleJobStart={this.handleJobStart} text={workOrder.notes} title={workOrder.part.name} quantity={workOrder.quantity} />)}
+          </div>
         </div>
-
 
         <Modal show={this.state.modalShow} >
           <Modal.Header >

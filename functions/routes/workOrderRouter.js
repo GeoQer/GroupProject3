@@ -12,7 +12,6 @@ router.get('/all', (req, res) => {
             res.json(arr);
         })
         .catch(err => 
-            alert(`Error occurred, please refer to error code ${err}`),
             res.json({ err }));
 })
 
@@ -43,7 +42,6 @@ router.get('/complete', (req, res) => {
             res.json(arr);
         })
         .catch(err => 
-            alert(`Error occurred, please refer to error code ${err}`),
             res.json({ err }))
 })
 
@@ -66,7 +64,6 @@ router.put('/update/:id', (req, res) => {
     })
         .then(() => res.json({ success: true }))
         .catch(err => 
-            alert(`Error occurred, please refer to error code ${err}`),
             res.json({ ...err }))
 });
 
@@ -74,7 +71,6 @@ router.delete('/:id', (req, res) => {
     db.collection('work-orders').doc(req.params.id).delete()
         .then(() => res.json({ success: true }))
         .catch(err => 
-            alert(`Error occurred, please refer to error code ${err}`),
             res.json({ err }));
 })
 
@@ -85,7 +81,6 @@ router.post('/create', (req, res) => {
             db.collection('work-orders').add({ ...job, part: { ...doc.data(), id: doc.id }, currentStation: doc.data().stations[0], isComplete: false, currentStationIndex: 0, dateCreated: firebase.firestore.FieldValue.serverTimestamp(), history: [] })
                 .then(doc => res.json({ id: doc.id }))
                 .catch(err => 
-                    alert(`Error occurred, please refer to error code ${err}`),
                     res.json({ err }));
         });
 })

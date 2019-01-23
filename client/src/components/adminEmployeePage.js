@@ -19,7 +19,7 @@ const EmployeeCard = props => (
             </div>
             <div>
                 <button className={`btn ${props.isAdmin ? 'btn-danger' : 'btn-success'}`} onClick={props.handleTogglePermission} data-id={props.id} data-is-admin={props.isAdmin}>{props.isAdmin ? 'Revoke Admin' : 'Make Admin'}</button>
-                <button style={{marginLeft: "10px"}} className="btn btn-danger" data-id={props.id} onClick={props.handleDelete}>Delete</button>
+                <button style={{ marginLeft: "10px" }} className="btn btn-danger" data-id={props.id} onClick={props.handleDelete}>Delete</button>
             </div>
         </div>
     </div>
@@ -33,6 +33,7 @@ class AdminEmployeePage extends React.Component {
             employees: [],
             interval: 0,
             adminCount: 0,
+            err: ''
         }
 
     }
@@ -40,27 +41,38 @@ class AdminEmployeePage extends React.Component {
     componentWillMount = () => {
         Axios.get('/api/v1/employees/all')
             .then(result => this.setState({ employees: result.data }, () => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err })
+                    return;
+                }
                 let count = 0;
                 this.state.employees.forEach(employee => {
-                    if(employee.isAdmin)
+                    if (employee.isAdmin)
                         count++;
                 })
-                this.setState({adminCount: count})
-            }));
-
+                this.setState({ adminCount: count })
+            }))
+            .catch(err => this.setState({ err }))
     }
 
     componentDidMount = () => {
         let x = setInterval(() => {
             Axios.get('/api/v1/employees/all')
-                .then(result => this.setState({ employees: result.data }, () => {
-                    let count = 0;
-                    this.state.employees.forEach(employee => {
-                        if(employee.isAdmin)
-                            count++;
+                .then(result => {
+                    if (result.data.err) {
+                        this.setState({ err: result.data.err })
+                        return;
+                    }
+                    this.setState({ employees: result.data }, () => {
+                        let count = 0;
+                        this.state.employees.forEach(employee => {
+                            if (employee.isAdmin)
+                                count++;
+                        })
+                        this.setState({ adminCount: count })
                     })
-                    this.setState({adminCount: count})
-                }))
+                })
+                .catch(err => this.setState({ err }))
         }, 15000);
         this.setState({ interval: x });
     }
@@ -82,8 +94,21 @@ class AdminEmployeePage extends React.Component {
         const id = event.target.getAttribute('data-id');
         Axios.delete(`/api/v1/employees/delete/${id}`)
             .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err })
+                    return;
+                }
+
                 Axios.get('/api/v1/employees/all')
-                    .then(result => this.setState({parts: result.data}))
+                    .then(result => {
+                        if (result.data.err) {
+                            this.setState({ err: result.data.err })
+                            return;
+                        }
+
+                        this.setState({ parts: result.data })
+                    })
+                    .catch(err => this.setState({ err }))
             });
     }
 
@@ -93,8 +118,8 @@ class AdminEmployeePage extends React.Component {
         const isAdmin = event.target.getAttribute('data-is-admin');
         let adminCount = this.state.adminCount;
 
-        if(isAdmin === 'true'){
-            if(adminCount <= 1){
+        if (isAdmin === 'true') {
+            if (adminCount <= 1) {
                 alert('You must have at least one user with admin privileges');
                 return;
             }
@@ -102,17 +127,30 @@ class AdminEmployeePage extends React.Component {
         }
         else
             adminCount++;
-        
-        this.setState({adminCount});
+
+        this.setState({ adminCount });
 
         Axios.put('/api/v1/employees/togglepermission', {
             id,
             isAdmin
         })
             .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err })
+                    return;
+                }
+
                 Axios.get('/api/v1/employees/all')
-                    .then(result => this.setState({ employees: result.data }));
+                    .then(result => {
+                        if (result.data.err) {
+                            this.setState({ err: result.data.err })
+                            return;
+                        }
+                        this.setState({ employees: result.data })
+                    })
+                    .catch(err => this.setState({ err }))
             })
+            .catch(err => this.setState({ err }))
     }
 
     render = props => (
@@ -123,6 +161,7 @@ class AdminEmployeePage extends React.Component {
             </ul>
             <br />
             <br />
+            <h2 style={{ color: 'red' }}>{this.state.err}</h2>
             <Route path="/admin/employees/create" component={EmployeeForm} />
             <Route path="/admin/employees/view" component={() => <ViewEmployees employees={this.state.employees} handleTogglePermission={this.handleTogglePermission} handleDelete={this.handleDelete} />} />
         </div>
