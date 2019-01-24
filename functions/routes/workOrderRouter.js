@@ -11,12 +11,7 @@ router.get('/all', (req, res) => {
             docs.forEach(doc => arr.push({ ...doc.data(), id: doc.id }));
             res.json(arr);
         })
-<<<<<<< HEAD
-        .catch(err =>
-            alert(`Error occurred, please refer to error code ${err}`),
-=======
         .catch(err => 
->>>>>>> 876a2a79f809d447e9020166af6bceaf461600b9
             res.json({ err }));
 })
 
@@ -46,12 +41,7 @@ router.get('/complete', (req, res) => {
             docs.forEach(doc => arr.push({ ...doc.data(), id: doc.id }));
             res.json(arr);
         })
-<<<<<<< HEAD
-        .catch(err =>
-            alert(`Error occurred, please refer to error code ${err}`),
-=======
         .catch(err => 
->>>>>>> 876a2a79f809d447e9020166af6bceaf461600b9
             res.json({ err }))
 })
 
@@ -73,30 +63,19 @@ router.put('/update/:id', (req, res) => {
         history: firebase.firestore.FieldValue.arrayUnion(newHistoryItem)
     })
         .then(() => res.json({ success: true }))
-<<<<<<< HEAD
-        .catch(err =>
-            alert(`Error occurred, please refer to error code ${err}`),
-=======
         .catch(err => 
->>>>>>> 876a2a79f809d447e9020166af6bceaf461600b9
             res.json({ ...err }))
 });
 
 router.delete('/:id', (req, res) => {
     db.collection('work-orders').doc(req.params.id).delete()
         .then(() => res.json({ success: true }))
-<<<<<<< HEAD
-        .catch(err =>
-            alert(`Error occurred, please refer to error code ${err}`),
-=======
         .catch(err => 
->>>>>>> 876a2a79f809d447e9020166af6bceaf461600b9
             res.json({ err }));
 })
 
 router.post('/create', (req, res) => {
     const job = req.body.job
-<<<<<<< HEAD
     const isAssembly = req.body.isAssembly;
 
     if (!isAssembly) {
@@ -126,6 +105,7 @@ router.post('/create', (req, res) => {
                     batch.set(partRef, {
                         isAssembly: true,
                         assemblyName: assembly.data().name,
+                        assemblyID: assembly.id,
                         notes: job.notes,
                         currentStation: part.stations[0],
                         currentStationIndex: 0,
@@ -142,15 +122,6 @@ router.post('/create', (req, res) => {
             })
             .catch(err => res.json({ err }))
     }
-=======
-    db.collection('parts').doc(req.body.job.part.id).get()
-        .then(doc => {
-            db.collection('work-orders').add({ ...job, part: { ...doc.data(), id: doc.id }, currentStation: doc.data().stations[0], isComplete: false, currentStationIndex: 0, dateCreated: firebase.firestore.FieldValue.serverTimestamp(), history: [] })
-                .then(doc => res.json({ id: doc.id }))
-                .catch(err => 
-                    res.json({ err }));
-        });
->>>>>>> 876a2a79f809d447e9020166af6bceaf461600b9
 })
 
 router.put('/next', (req, res) => {

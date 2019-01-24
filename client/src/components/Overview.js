@@ -44,8 +44,8 @@ class Overview extends React.Component {
                 this.setState({ stations: result.data }, () => {
                     Axios.get('/api/v1/workorders/active')
                         .then(result => {
-                            if(result.data.err){
-                                this.setState({ err: result.data.err});
+                            if (result.data.err) {
+                                this.setState({ err: result.data.err });
                                 return;
                             }
 
@@ -80,8 +80,8 @@ class Overview extends React.Component {
                         })
                         .catch(err => this.setState({ err }))
                 })
-                    .catch(err => this.setState({ err }))
             })
+            .catch(err => this.setState({ err }))
     }
 
     viewHistory = event => {
@@ -102,7 +102,7 @@ class Overview extends React.Component {
         return (
             <div className="container" >
                 <div className="row">
-                    <h2 style={{color: 'red'}}>{this.state.err}</h2>
+                    <h2 style={{ color: 'red' }}>{this.state.err}</h2>
                 </div>
                 {this.state.activeStations.map((station, index) => {
                     return (
@@ -111,6 +111,7 @@ class Overview extends React.Component {
                             <table className="table">
                                 <thead>
                                     <tr><th>Job ID</th>
+                                        <th>Assembly ID</th>
                                         <th>Part Name</th>
                                         <th>Quantity</th></tr>
                                 </thead>
@@ -120,6 +121,7 @@ class Overview extends React.Component {
                                             return (
                                                 <tr key={index}>
                                                     <td>{workOrder.id.slice(workOrder.id.length - 4, workOrder.id.length)}</td>
+                                                    <td>{workOrder.isAssembly ? workOrder.assemblyID.slice(workOrder.assemblyID.length - 4, workOrder.assemblyID.length) : ''}</td>
                                                     <td>{workOrder.part.name}</td>
                                                     <td>{workOrder.quantity}</td>
                                                     <td><button className="btn btn-primary" data-id={workOrder.id} onClick={this.viewHistory}>View History</button></td>
