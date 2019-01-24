@@ -209,7 +209,7 @@ class Employee extends React.Component {
             <h2 style={{ color: 'red' }}>{this.state.err}</h2>
           </div>
           <div className="row">
-            {this.state.workOrders.map(workOrder => <WorkOrder key={workOrder.id} id={workOrder.id} handleJobStart={this.handleJobStart} text={workOrder.notes} title={workOrder.part.name} quantity={workOrder.quantity} />)}
+            {this.state.workOrders.map(workOrder => <WorkOrder key={workOrder.id} id={workOrder.id} handleJobStart={this.handleJobStart} text={workOrder.notes} title={workOrder.part.name} quantity={workOrder.quantity} assemblyName={workOrder.assemblyName} />)}
           </div>
         </div>
 
