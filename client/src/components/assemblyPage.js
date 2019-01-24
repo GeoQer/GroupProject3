@@ -60,7 +60,20 @@ class AssemblyPage extends React.Component{
     }
 
     handleDelete = event => {
-        alert('Delete Function in Progress');
+        const id = event.target.getAttribute('data-id');
+        Axios.put('/api/v1/assemblies/archive', {
+            id
+        })
+        .then(result => {
+            if(result.data.err){
+                this.setState({ err: result.data.err });
+                return;
+            }
+
+            Axios.get('/api/v1/assemblies/all')
+                .then(result => this.setState({assemblies: result.data}))
+        })
+        .catch(err => this.setState({ err }))
     }
 
     render = () => (

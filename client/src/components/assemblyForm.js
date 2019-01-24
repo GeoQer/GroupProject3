@@ -98,7 +98,7 @@ class AssemblyForm extends React.Component {
             return;
         }
 
-        if (!this.state.assembly.name) {
+        if (this.state.assembly.name.length < 1) {
             this.setState({ err: 'Please name your new assembly' });
             return;
         }
