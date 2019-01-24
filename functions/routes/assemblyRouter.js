@@ -15,7 +15,7 @@ router.post('/create', (req, res) => {
         db.collection('assemblies').doc(req.body.id).update({
             ...req.body.assembly
         })
-        .then(doc => res.json({success: true}))
+        .then(() => res.json({success: true}))
         .catch(err => res.json({ err }))
     }
 });
