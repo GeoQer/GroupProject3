@@ -69,7 +69,6 @@ router.put('/archive/:id', (req, res) => {
     })
     .then(() => res.json({success: true}))
     .catch(err => 
-        alert(`Error occurred, please refer to error code ${err}`),
         res.json({ err }))
 })
 

@@ -50,10 +50,15 @@ class AssemblyForm extends React.Component {
             alert('Please input the number of parts per assembly');
             return;
         }
+        let partIndex = 0;
+        this.state.parts.forEach((part, index) => {
+            if(part.id === this.state.selectedPart.id)
+                partIndex = index;
+        })
 
         const assembly = Object.assign(this.state.assembly);
-        assembly.parts.push({...this.state.selectedPart, quantity: this.state.currentQuantity});
-        this.setState({ assembly, showModal: false, selectedPart: this.state.parts[0] });
+        assembly.parts.push({ ...this.state.parts[partIndex], quantity: this.state.currentQuantity });
+        this.setState({ assembly, showModal: false, selectedPart: this.state.parts[0] }, () => console.log(this.state));
     }
 
     removePart = event => {
@@ -88,29 +93,35 @@ class AssemblyForm extends React.Component {
     }
 
     handleSubmit = () => {
-        if(this.state.assembly.parts.length < 1){
-            this.setState({err: 'Please select a minimum of one part'});
+        if (this.state.assembly.parts.length < 1) {
+            this.setState({ err: 'Please select a minimum of one part' });
             return;
         }
-        
-        if(!this.state.assembly.name){
-            this.setState({err: 'Please name your new assembly'});
+
+        if (!this.state.assembly.name) {
+            this.setState({ err: 'Please name your new assembly' });
             return;
         }
 
         Axios.post('/api/v1/assemblies/create', {
             assembly: this.state.assembly
         })
-        .then(result => {
-            if(result.data.err){
-                this.setState({err: result.data.err});
-                return;
-            }
+            .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err });
+                    return;
+                }
 
-            this.clear();
-            this.setState({msg: 'Assembly successfully added.'});
-        })
+                this.clear();
+                this.setState({ msg: 'Assembly successfully added.' });
+            })
 
+    }
+
+    handleSelectChange = event => {
+        const id = event.target.value;
+        const name = event.target.children[event.target.selectedIndex].text;
+        this.setState({ selectedPart: { id, name } })
     }
 
 
@@ -118,7 +129,7 @@ class AssemblyForm extends React.Component {
         return (
             <div className="container">
                 <div className="row">
-                    <h2 style={this.state.err ? {color: 'red'} : {color: 'green'}}>{this.state.err || this.state.msg }</h2>
+                    <h2 style={this.state.err ? { color: 'red' } : { color: 'green' }}>{this.state.err || this.state.msg}</h2>
                 </div>
                 <div className="row">
                     <form id="assembly form">
