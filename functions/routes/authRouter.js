@@ -19,12 +19,10 @@ router.post('/create', (req, res) => {
             })
             .then(doc => res.json({success: true, uid: user.user.uid}))
             .catch(err => {console.log(err);
-                alert(`Error occurred, please refer to error code ${err}`);
-                json.res({err})})
+                json.res({ err })})
         })
         .catch(err => {
             console.log(err);
-            alert(`Error occurred, please refer to error code ${err}`);
             res.json({ err });
         });
 });
@@ -41,7 +39,6 @@ router.post('/login', (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            alert(`Error occurred, please refer to error code ${err}`);
             res.json({ err });
         })
 });
@@ -51,7 +48,6 @@ router.post('/logout', (req, res) => {
     .then(() => res.json({ signedOut: true}))
     .catch(err => {
         console.log(err);
-        alert(`Error occurred, please refer to error code ${err}`);
         res.json({ err });
     })
 });
@@ -63,7 +59,6 @@ router.post('/verify', (req, res) => {
         .then(code => res.json(code))
     }
     catch(err){
-        alert(`Error occurred, please refer to error code ${err}`);
         res.json(err);
     }
 })

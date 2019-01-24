@@ -25,13 +25,21 @@ class PartForm extends React.Component {
                 stations: []
             },
             showModal: false,
-            loaded: false
+            loaded: false,
+            err: ''
         }
     }
 
     componentWillMount = () => {
         Axios.get('/api/v1/stations/all')
-        .then(result => this.setState({ stations: result.data, selectedStation: result.data[0], loaded: true }));
+            .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err });
+                    return;
+                }
+                this.setState({ stations: result.data, selectedStation: result.data[0], loaded: true })
+            })
+            .catch(err => this.setState({ err }));
     }
 
     componentDidMount = () => {
@@ -77,29 +85,30 @@ class PartForm extends React.Component {
     addStation = () => {
         const obj = Object.assign(this.state.part);
         obj.stations.push(this.state.selectedStation);
-        this.setState({ part: obj, showModal: false, selectedStation: this.state.stations[0] });
+        this.setState({ part: obj, showModal: false, selectedStation: this.state.stations[0], err: '' });
     }
 
     handleInput = (event) => {
         const name = event.target.name;
         let obj = Object.assign(this.state.part);
         obj[name] = event.target.value;
-        this.setState({ part: obj });
+        this.setState({ part: obj, err: '' });
     }
 
     clear = () => {
         document.getElementById('part-id').value = '';
         document.getElementById('attachment').value = '';
         document.getElementById('part-name').value = '';
-        this.setState({ part: { id: '', stations: [] } });
+        this.setState({ part: { id: '', stations: [] }, err: '' });
     }
 
     handleSubmit = () => {
         if (this.state.part.stations.length < 1) {
-            console.log('Please select a minimum of one station');
+            this.setState({err: 'Please select a minimum of one station'});
             return;
         }
 
+        this.setState({ err: ''})
 
         const file = document.getElementById('attachment').files[0];
 
@@ -111,64 +120,79 @@ class PartForm extends React.Component {
                     part: { ...this.state.part, filename: file.name }
                 })
                     .then(response => {
+                        if (response.data.err) {
+                            this.setState({ err: response.data.err });
+                            return;
+                        }
+
                         this.clear();
                         const ref = firebase.storage().ref(`/${response.data.newPartID}/${file.name}`);
                         ref.put(blob)
-                            .then(() => console.log('success'), () => console.log('error'));
+                            .then(() => console.log('success'), () => this.setState({err: 'An unknown error occurred.'}));
                     })
+                    .catch(err => this.setState({ err }))
             }
             reader.readAsArrayBuffer(file);
         }
-        else{
+        else {
             Axios.post('/api/v1/parts/create', {
                 part: { ...this.state.part, filename: 'no file' }
             })
-                .then(response => this.clear())
-                .catch(err => console.log(err));
+                .then(response => {
+                    if(response.data.err){
+                        this.setState({err: response.data.err });
+                        return;
+                    }
+                    this.clear()
+                })
+                .catch(err => this.setState({ err }));
         }
     }
 
     render = () => {
         return (
             <div className="container">
-                <div className='row'>
-                <div className='col-sm-4'>
-                <form id="part-form" action="/api/v1/parts/test" method="POST">
-                    <div className="input-group">
-                        <span className="input-group-addon" id="part-number-addon">Part ID</span>
-                        <input name="id" id="part-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
-                    </div>
-                    <div className="input-group">
-                        <span className="input-group-addon" id="part-name-addon">Part Name</span>
-                        <input name="name" id="part-name" onChange={this.handleInput} type="text" className="form-control" />
-                    </div>
-                    <div className="input-group">
-                        <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="part-document-addon" />
-                    </div>
-                    {this.state.part.stations ? this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />) : ''}
-                </form>
-                <br />
-                <button className="btn btn-success" onClick={this.showModal}>Add Station</button>
-                <br />
-                <hr />
-                
-                    <button className="btn btn-success" onClick={this.handleSubmit}>Submit</button>
-                    <button className="btn btn-danger" onClick={this.clear}>Clear</button>
-                
-                <Modal show={this.state.showModal}>
-                    <Modal.Title>Select a Station</Modal.Title>
-                    <FormGroup>
-                        <ControlLabel>Stations</ControlLabel>
-                        <FormControl componentClass="select" placeholder="Select a station" onChange={this.handleSelectChange}>
-                            {this.state.loaded ? this.state.stations.map(station => <option key={station.id} value={station.id}>{station.name}</option>) : 'Loading ...'}
-                        </FormControl>
-                    </FormGroup>
-                    <FormGroup>
-                        <button className="btn btn-success" onClick={this.addStation}>OK</button>
-                        <button className="btn btn-danger" onClick={this.hideModal}>Cancel</button>
-                    </FormGroup>
-                </Modal>
+                <div className="row">
+                    <h1 style={{color: 'red'}}>{this.state.err}</h1>
                 </div>
+                <div className='row'>
+                    <div className='col-sm-4'>
+                        <form id="part-form" action="/api/v1/parts/test" method="POST">
+                            <div className="input-group">
+                                <span className="input-group-addon" id="part-number-addon">Part ID</span>
+                                <input name="id" id="part-id" onChange={this.handleInput} type="text" className="form-control" placeholder="If left blank an ID will be auto-generated" aria-describedby="part-number-addon" />
+                            </div>
+                            <div className="input-group">
+                                <span className="input-group-addon" id="part-name-addon">Part Name</span>
+                                <input name="name" id="part-name" onChange={this.handleInput} type="text" className="form-control" />
+                            </div>
+                            <div className="input-group">
+                                <input name="doc" id="attachment" onChange={this.handleInput} type="file" className="form-control" aria-describedby="part-document-addon" />
+                            </div>
+                            {this.state.part.stations ? this.state.part.stations.map((station, index) => <Station key={index} stationName={station.name} id={station.id} removeStation={this.removeStation} />) : ''}
+                        </form>
+                        <br />
+                        <button className="btn btn-success" onClick={this.showModal}>Add Station</button>
+                        <br />
+                        <hr />
+
+                        <button className="btn btn-success" onClick={this.handleSubmit}>Submit</button>
+                        <button className="btn btn-danger" onClick={this.clear}>Clear</button>
+
+                        <Modal show={this.state.showModal}>
+                            <Modal.Title>Select a Station</Modal.Title>
+                            <FormGroup>
+                                <ControlLabel>Stations</ControlLabel>
+                                <FormControl componentClass="select" placeholder="Select a station" onChange={this.handleSelectChange}>
+                                    {this.state.loaded ? this.state.stations.map(station => <option key={station.id} value={station.id}>{station.name}</option>) : 'Loading ...'}
+                                </FormControl>
+                            </FormGroup>
+                            <FormGroup>
+                                <button className="btn btn-success" onClick={this.addStation}>OK</button>
+                                <button className="btn btn-danger" onClick={this.hideModal}>Cancel</button>
+                            </FormGroup>
+                        </Modal>
+                    </div>
                 </div>
             </div>
         )

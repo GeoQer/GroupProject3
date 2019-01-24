@@ -14,7 +14,8 @@ class Admin extends React.Component {
     this.state = {
       isLoggedIn: false,
       stations: [],
-      workOrders: []
+      workOrders: [],
+      err: ''
     }
   }
 
@@ -24,7 +25,8 @@ class Admin extends React.Component {
         const arr = [];
         result.data.forEach(workOrder => arr.push({ ...workOrder, inProgress: false }));
         this.setState({ workOrders: arr });
-      });
+      })
+      .catch(err => this.setState({ err }))
   }
 
   componentWillMount() {
@@ -39,10 +41,7 @@ class Admin extends React.Component {
           sessionStorage.clear();
         }
       })
-      .catch(err => {
-        console.log(err);
-      })
-
+      .catch(err => this.setState({ err }))
   }
 
   render() {
@@ -51,6 +50,7 @@ class Admin extends React.Component {
         <div className='c'>
           <div className="container">
             <h1>You are not an Admin</h1>
+            <h3 style={{color: 'red'}}>{this.state.err}</h3>
             <Link to="/employee">Go to Employee Page</Link>
           </div>
         </div>
@@ -61,6 +61,7 @@ class Admin extends React.Component {
         <div className='d'>
           <div className="container">
             <h1>You are not logged in</h1>
+            <h3 stlye={{color: 'red'}} >{this.state.err}</h3>
             <Link to="/">login</Link>
           </div>
         </div>
@@ -70,6 +71,7 @@ class Admin extends React.Component {
       return (
         <div>
           <AdminBar stations={this.state.stations} handleStationSelect={this.handleStationSelect} />
+          <h2 style={{color: 'red'}}>{this.state.err}</h2>
         </div>
       );
     }

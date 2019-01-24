@@ -20,9 +20,6 @@ const menuBar = props => (
                 </NavDropdown>
             </Nav>
             <Nav pullRight>
-                {/* <NavItem eventKey={1} href="#profile">
-                    Profile
-                </NavItem> */}
                 <NavItem eventKey={2} href="#logout" onClick={props.handleLogout}>
                     Logout
                 </NavItem>

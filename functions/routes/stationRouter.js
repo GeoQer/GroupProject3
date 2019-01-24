@@ -18,7 +18,6 @@ router.post('/create', (req, res) => {
     })
     .then(doc => res.json({...doc.data(), id: doc.id}))
     .catch(err => 
-        alert(`Error occurred, please refer to error code ${err}`),
         res.json({ ...err }))
 })
 
@@ -29,7 +28,6 @@ router.put('/remove', (req, res) => {
     })
     .then(() => res.json({success: true}))
     .catch(err => 
-        alert(`Error occurred, please refer to error code ${err}`),
         res.json({...err}))
 })
 module.exports = router;

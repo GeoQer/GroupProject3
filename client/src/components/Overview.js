@@ -31,43 +31,57 @@ class Overview extends React.Component {
             workOrders: [],
             currentWorkOrder: null,
             showModal: false,
-            activeSations: false
+            activeSations: false,
+            err: ''
         }
 
         Axios.get('/api/v1/stations/all')
-            .then(result => this.setState({ stations: result.data }, () => {
-                Axios.get('/api/v1/workorders/active')
-                    .then(result => this.setState({ workOrders: result.data }, () => {
-
-                        const stations = this.state.stations.slice(0);
-                        const indices = [];
-
-                        stations.forEach((station, index) => {
-                            let count = 0;
-                            this.state.workOrders.forEach(workOrder => {
-                                if (workOrder.currentStation.id === station.id)
-                                    count++;
-                            })
-                            if (count === 0) {
-                                indices.push(index)
+            .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err })
+                    return;
+                }
+                this.setState({ stations: result.data }, () => {
+                    Axios.get('/api/v1/workorders/active')
+                        .then(result => {
+                            if(result.data.err){
+                                this.setState({ err: result.data.err});
+                                return;
                             }
+
+                            this.setState({ workOrders: result.data }, () => {
+
+                                const stations = this.state.stations.slice(0);
+                                const indices = [];
+
+                                stations.forEach((station, index) => {
+                                    let count = 0;
+                                    this.state.workOrders.forEach(workOrder => {
+                                        if (workOrder.currentStation.id === station.id)
+                                            count++;
+                                    })
+                                    if (count === 0) {
+                                        indices.push(index)
+                                    }
+                                })
+
+                                indices.forEach(index => {
+                                    stations[index] = null;
+                                })
+
+                                const newStations = [];
+
+                                stations.forEach(station => {
+                                    if (station != null)
+                                        newStations.push(station);
+                                })
+                                this.setState({ activeStations: newStations });
+                            })
                         })
-
-                        indices.forEach(index => {
-                            stations[index] = null;
-                        })
-
-                        const newStations = [];
-
-                        stations.forEach(station => {
-                            if (station != null)
-                                newStations.push(station);
-                        })
-
-
-                        this.setState({ activeStations: newStations });
-                    }))
-            }))
+                        .catch(err => this.setState({ err }))
+                })
+                    .catch(err => this.setState({ err }))
+            })
     }
 
     viewHistory = event => {
@@ -87,6 +101,9 @@ class Overview extends React.Component {
 
         return (
             <div className="container" >
+                <div className="row">
+                    <h2 style={{color: 'red'}}>{this.state.err}</h2>
+                </div>
                 {this.state.activeStations.map((station, index) => {
                     return (
                         <div key={index} className="row">
@@ -146,7 +163,7 @@ class Overview extends React.Component {
                                     })}
                                 </tbody>
                             </table>
-                        ) : '' }
+                        ) : ''}
                     </Modal.Body>
                 </Modal>
             </div>
