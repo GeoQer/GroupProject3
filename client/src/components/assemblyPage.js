@@ -56,7 +56,10 @@ class AssemblyPage extends React.Component{
     }
 
     handleEdit = event => {
-        alert('Edit Function in Progress');
+        const id = event.target.getAttribute('data-id');
+        sessionStorage.setItem('isEditing', 'true');
+        sessionStorage.setItem('assemblyEditID', id);
+        document.getElementById('create-link').click();
     }
 
     handleDelete = event => {
@@ -80,7 +83,7 @@ class AssemblyPage extends React.Component{
         <div className="container">
             <ul className="nav nav-pills">
                 <li role="presentation" className="active tab-link" onClick={this.handleTabSelect}><Link to="/admin/assemblies/view">View</Link></li>
-                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link to="/admin/assemblies/create">Create</Link></li>
+                <li role="presentation" className="tab-link" onClick={this.handleTabSelect}><Link id="create-link" to="/admin/assemblies/create">Create</Link></li>
             </ul>
             <br />
             <br />

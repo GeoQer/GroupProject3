@@ -5,7 +5,7 @@ import { Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 const Part = props => (
     <div>
         <h2><span className="label label-primary" style={{ float: 'left', marginRight: '7px' }}>{props.partName}</span></h2>
-        <h2><span className="label label-warning" style={{ float: 'left', marginRight: '7px' }}>{props.qty}</span></h2>
+        <h2><span className="label label-info" style={{ float: 'left', marginRight: '7px' }}>{props.quantity}</span></h2>
         <button data-id={props.id} className="btn btn-danger" onClick={props.removePart}>x</button>
     </div>
 )
@@ -36,7 +36,23 @@ class AssemblyForm extends React.Component {
                     return;
                 }
 
-                this.setState({ parts: result.data, selectedPart: result.data[0], loaded: true });
+                this.setState({ parts: result.data, selectedPart: result.data[0], loaded: true }, () => {
+                    if(sessionStorage.getItem('isEditing') === 'true'){
+                        const id = sessionStorage.getItem('assemblyEditID');
+                        sessionStorage.removeItem('isEditing')
+                        sessionStorage.removeItem('assemblyEditID');
+
+                        Axios.get(`/api/v1/assemblies/${id}`)
+                            .then(result => {
+                                this.setState({
+                                    assembly: {name: result.data.name, parts: result.data.parts},
+                                }, () => {
+                                    document.getElementById('assembly-name').value = result.data.name;
+                                    document.getElementById('assembly-id').value = result.data.id;
+                                })
+                            })
+                    }
+                });
             })
             .catch(err => this.setState({ err }));
     }
@@ -58,7 +74,7 @@ class AssemblyForm extends React.Component {
 
         const assembly = Object.assign(this.state.assembly);
         assembly.parts.push({ ...this.state.parts[partIndex], quantity: this.state.currentQuantity });
-        this.setState({ assembly, showModal: false, selectedPart: this.state.parts[0] }, () => console.log(this.state));
+        this.setState({ assembly, showModal: false, selectedPart: this.state.parts[0] });
     }
 
     removePart = event => {
@@ -84,6 +100,7 @@ class AssemblyForm extends React.Component {
 
     clear = () => {
         document.getElementById('assembly-name').value = '';
+        document.getElementById('assembly-id').value = 'New Part';
         this.setState({ assembly: { name: '', parts: [] }, currentQuantity: 0, err: '' });
     }
 
@@ -104,7 +121,8 @@ class AssemblyForm extends React.Component {
         }
 
         Axios.post('/api/v1/assemblies/create', {
-            assembly: this.state.assembly
+            assembly: this.state.assembly,
+            id: document.getElementById('assembly-id').value
         })
             .then(result => {
                 if (result.data.err) {
@@ -134,10 +152,14 @@ class AssemblyForm extends React.Component {
                 <div className="row">
                     <form id="assembly form">
                         <div className="input-group">
+                            <span className="input-group-addon" id="assembly-id-addon">ID</span>
+                            <input name="id" id="assembly-id" disabled type="text" className="form-control" placeholder="New Part"></input>
+                        </div>
+                        <div className="input-group">
                             <span className="input-group-addon" id="assembly-name-addon">Name</span>
                             <input name="name" id="assembly-name" onChange={this.handleInput} type="text" className="form-control" />
                         </div>
-                        {this.state.assembly.parts ? this.state.assembly.parts.map((part, index) => <Part key={index} partName={part.name} id={part.id} removePart={this.removePart} />) : ''}
+                        {this.state.assembly.parts ? this.state.assembly.parts.map((part, index) => <Part key={index} partName={part.name} id={part.id} quantity={part.quantity} removePart={this.removePart} />) : ''}
                     </form>
                     <br />
                     <button className="btn btn-success" onClick={this.showModal}>Add Part</button>
