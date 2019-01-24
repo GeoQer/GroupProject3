@@ -14,8 +14,8 @@ class AdminBar extends React.Component {
         super(props);
         this.state = {
             ref: null,
-            username: null
-
+            username: null,
+            err: ''
         }
     }
 
@@ -28,11 +28,17 @@ class AdminBar extends React.Component {
     handleLogout = () => {
         Axios.post('/api/v1/auth/logout')
             .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err });
+                    return;
+                }
+
                 if (result.data.signedOut === true) {
                     sessionStorage.clear();
                     window.location.replace('/');
                 }
-            });
+            })
+            .catch(err => this.setState({ err }))
     }
 
     render = props => {
@@ -81,6 +87,11 @@ class AdminBar extends React.Component {
                             </Nav>
                         </Navbar.Collapse>
                     </Navbar>
+                    <div className="container">
+                        <div className="row">
+                            <h2 style={{ color: 'red' }}>{this.state.err}</h2>
+                        </div>
+                    </div>
                     <Link to="/admin/parts/view" id="parts" />
                     <Link to="/admin/stations" id="stations" />
                     <Link to="/admin/jobs/view" id="jobs" />

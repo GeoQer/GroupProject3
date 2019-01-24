@@ -44,7 +44,7 @@ class JobForm extends React.Component {
         const name = event.target.children[event.target.selectedIndex].text;
         const job = Object.assign(this.state.job);
         job.part = { id, name };
-        this.setState({ job, errMsg: '' }, () => console.log(this.state));
+        this.setState({ job, errMsg: '' });
     }
 
     handleInput = (event) => {
@@ -64,6 +64,10 @@ class JobForm extends React.Component {
             isAssembly: !this.state.partTypeisSelected
         })
             .then(result => {
+                if(result.data.err){
+                    this.setState({err: result.data.err});
+                    return;
+                }
                 this.clear();
             })
     }
@@ -82,7 +86,7 @@ class JobForm extends React.Component {
             tabs[i].setAttribute('class', 'tab-link type-tab');
         }
         target.parentElement.setAttribute('class', 'active tab-link type-tab');
-
+        
     }
 
     render() {

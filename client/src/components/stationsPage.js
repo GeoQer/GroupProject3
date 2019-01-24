@@ -8,13 +8,21 @@ class StationsPage extends React.Component {
         this.state = {
             stations: [],
             showModal: false,
-            newStation: null
+            newStation: null,
+            err: ''
         }
     }
 
     componentWillMount = () => {
         Axios.get('/api/v1/stations/all')
-            .then(result => this.setState({ stations: result.data }));
+            .then(result => {
+                if(result.data.err){
+                    this.setState({err: result.data.err});
+                    return;
+                }
+                this.setState({ stations: result.data })
+            })
+            .catch(err => this.setState({ err }));
     }
 
     closeModal = () => {
@@ -36,7 +44,14 @@ class StationsPage extends React.Component {
         })
             .then(result => {
                 Axios.get('/api/v1/stations/all')
-                    .then(result => this.setState({ stations: result.data, showModal: false }))
+                    .then(result => {
+                        if(result.data.err){
+                            this.setState({err: result.data.err});
+                            return;
+                        }
+                        this.setState({ stations: result.data, showModal: false })
+                    })
+                    .catch(err => this.setState({ err }))
             });
 
     }
@@ -44,7 +59,7 @@ class StationsPage extends React.Component {
     handleInput = event => {
         const name = event.target.name;
         const value = event.target.value;
-        this.setState({ [name]: value });
+        this.setState({ [name]: value, err: '' });
     }
 
     handleDelete = event => {
@@ -53,14 +68,28 @@ class StationsPage extends React.Component {
             id
         })
             .then(result => {
+                if(result.data.err){
+                    this.setState({err: result.data.err});
+                    return;
+                }
                 Axios.get('/api/v1/stations/all')
-                    .then(result => this.setState({stations: result.data}))
+                    .then(result => {
+                        if(result.data.err){
+                            this.setState({err: result.data.err});
+                            return;
+                        }
+                        this.setState({stations: result.data})
+                    })
+                    .catch(err => this.setState({ err }));
             })
     }
 
     render() {
         return (
             <div className="container">
+                <div className="row">
+                    <h2 style={{color: 'red'}}>{this.state.err}</h2>
+                </div>
                 <div className="row">
                     <table className="table">
                         <thead>

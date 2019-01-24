@@ -29,7 +29,6 @@ router.post('/create', (req, res) => {
                 res.json({ newPartID: response.id })
             })
             .catch(err => 
-                alert(`Error occurred, please refer to error code ${err}`),
                 res.json({ err }))
 
     }
@@ -47,7 +46,6 @@ router.get('/edit/:id', (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            alert(`Error occurred, please refer to error code ${err}`);
             res.json({ err });
         })
 })
