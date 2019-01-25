@@ -50,17 +50,21 @@ router.put('/update/:id', (req, res) => {
     const currentStation = req.body.currentStation;
     const employeeID = req.body.uid;
     const employeeName = req.body.username;
+    const partsCompleted = parseInt(req.body.partsCompleted);
+    const partialQty = parseInt(req.body.partialQty);
 
     const newHistoryItem = {
         employeeName,
         employeeID,
         stationName: currentStation.name,
-        time: currentStation.time
+        time: currentStation.time,
+        partsCompleted
     }
 
     db.collection('work-orders').doc(id).update({
         currentStation,
-        history: firebase.firestore.FieldValue.arrayUnion(newHistoryItem)
+        history: firebase.firestore.FieldValue.arrayUnion(newHistoryItem),
+        partialQty
     })
         .then(() => res.json({ success: true }))
         .catch(err => 
@@ -88,7 +92,8 @@ router.post('/create', (req, res) => {
                     isComplete: false,
                     currentStationIndex: 0,
                     dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
-                    history: []
+                    history: [],
+                    partialQty: Number(0)
                 })
                     .then(doc => res.json({ id: doc.id }))
                     .catch(err =>
@@ -151,7 +156,8 @@ router.put('/next', (req, res) => {
             ...currentWorkOrder,
             currentStationIndex: currentWorkOrder.currentStationIndex + 1,
             currentStation: currentWorkOrder.part.stations[currentWorkOrder.currentStationIndex + 1],
-            history: firebase.firestore.FieldValue.arrayUnion(newHistoryItem)
+            history: firebase.firestore.FieldValue.arrayUnion(newHistoryItem),
+            partialQty: Number(0)
         })
     }
 
