@@ -18,11 +18,13 @@ const partsRouter = require('./routes/partsRouter');
 const employeeRouter = require('./routes/employeeRouter');
 const stationRouter = require('./routes/stationRouter');
 const workOrderRouter = require('./routes/workOrderRouter');
+const assemblyRouter = require('./routes/assemblyRouter');
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/parts', partsRouter);
 app.use('/api/v1/employees', employeeRouter);
 app.use('/api/v1/stations', stationRouter);
 app.use('/api/v1/workorders', workOrderRouter);
+app.use('/api/v1/assemblies', assemblyRouter);
 
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "../client/build/index.html"));

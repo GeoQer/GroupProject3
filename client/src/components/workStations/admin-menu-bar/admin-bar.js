@@ -7,6 +7,7 @@ import AdminEmployeePage from '../../adminEmployeePage';
 import StationsPage from '../../stationsPage';
 import JobPage from '../../jobsPage';
 import Overview from '../../Overview';
+import AssemblyPage from '../../assemblyPage';
 
 class AdminBar extends React.Component {
     constructor(props) {
@@ -68,10 +69,16 @@ class AdminBar extends React.Component {
                 </NavItem>
                             </Nav>
                             <Nav>
+                                <NavItem eventKey={4} data-ref="assemblies" title="Assemblies" onClick={this.handleClick} >
+                                    Assemblies
+                </NavItem>
+                            </Nav>
+                            <Nav>
                                 <NavItem eventKey={4} data-ref="employees" title="Employees" onClick={this.handleClick} >
                                     Employees
                 </NavItem>
                             </Nav>
+
                             <Nav pullRight>
 
                                 <NavItem eventKey={2} data-ref="logout" onClick={this.handleLogout}>
@@ -89,12 +96,14 @@ class AdminBar extends React.Component {
                     <Link to="/admin/stations" id="stations" />
                     <Link to="/admin/jobs/view" id="jobs" />
                     <Link to="/admin/employees/view" id="employees" />
+                    <Link to="/admin/assemblies/view" id="assemblies" />
                     <Link to="/admin" id="admin" />
                     <Link to="/" id="logout" />
                     <Route path="/admin/stations" component={StationsPage} />
                     <Route path="/admin/parts" component={PartPage} />
                     <Route path="/admin/employees" component={AdminEmployeePage} />
                     <Route path="/admin/jobs" component={JobPage} />
+                    <Route path="/admin/assemblies" component={AssemblyPage} />
                     <Route exact path="/admin" component={Overview} />
                 </div>
             </Router>

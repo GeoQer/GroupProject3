@@ -7,11 +7,13 @@ class JobForm extends React.Component {
         super(props);
         this.state = {
             parts: [],
+            assemblies: [],
             job: {
                 part: "Select a Part",
                 quantity: 0,
-                notes: ''
+                notes: '',
             },
+            partTypeisSelected: true,
             err: ''
         }
     };
@@ -26,12 +28,13 @@ class JobForm extends React.Component {
 
     componentWillMount = () => {
         Axios.get('/api/v1/parts/all')
+            .then(result => this.setState({ parts: result.data }))
+        Axios.get('/api/v1/assemblies/all')
             .then(result => {
                 if (result.data.err) {
                     this.setState({ err: result.data.err })
-                    return;
                 }
-                this.setState({ parts: result.data })
+                this.setState({ assemblies: result.data })
             })
             .catch(err => this.setState({ err }))
     }
@@ -45,7 +48,6 @@ class JobForm extends React.Component {
     }
 
     handleInput = (event) => {
-
         const name = event.target.name;
         let obj = Object.assign(this.state.job);
         obj[name] = event.target.value;
@@ -53,12 +55,13 @@ class JobForm extends React.Component {
     }
 
     handleSubmit = async () => {
-        if (this.state.job.part === 'Select a Part' || this.state.job.quantity < 1) {
+        if (this.state.job.part === 'Select an option' || this.state.job.quantity < 1) {
             this.setState({ errMsg: 'Please make sure you have selected a Part and set a Quantity' })
             return;
         }
         Axios.post('/api/v1/workorders/create', {
-            job: this.state.job
+            job: this.state.job,
+            isAssembly: !this.state.partTypeisSelected
         })
             .then(result => {
                 if(result.data.err){
@@ -67,7 +70,23 @@ class JobForm extends React.Component {
                 }
                 this.clear();
             })
-            .catch(err => this.setState({ err }))
+    }
+
+    handleJobTypeSelect = event => {
+        event.preventDefault();
+        const type = event.target.getAttribute('data-type');
+        if (type === 'part')
+            this.setState({ partTypeisSelected: true })
+        else
+            this.setState({ partTypeisSelected: false })
+
+        const target = event.target;
+        const tabs = document.getElementsByClassName('type-tab');
+        for (let i = 0; i < tabs.length; i++) {
+            tabs[i].setAttribute('class', 'tab-link type-tab');
+        }
+        target.parentElement.setAttribute('class', 'active tab-link type-tab');
+        
     }
 
     render() {
@@ -80,11 +99,16 @@ class JobForm extends React.Component {
                             <span name="id" id="job-id" className="form-control" aria-describedby="job-number-addon">{this.state.id ? this.state.id : 'New Part'}</span>
                         </div>
                         <br />
+                        <ul className="nav nav-pills">
+                            <li role="presentation" className="active tab-link type-tab" onClick={this.handleJobTypeSelect}><a href="/" data-type="part">Part</a></li>
+                            <li role="presentation" className="tab-link type-tab" onClick={this.handleJobTypeSelect}><a href="/" data-type="assembly">Assembly</a></li>
+                        </ul>
+                        <br />
                         <FormGroup>
-                            <ControlLabel>Parts</ControlLabel>
+                            <ControlLabel>{this.state.partTypeisSelected ? "Parts" : "Assemblies"}</ControlLabel>
                             <FormControl componentClass="select" placeholder="Select a part" onChange={this.handleSelectChange} id="selector">
-                                <option>Select a Part</option>
-                                {this.state.parts.map((part, index) => <option key={index} value={part.id}>{part.name}</option>)}
+                                <option>Select an option</option>
+                                {this.state.partTypeisSelected ? this.state.parts.map((part, index) => <option key={index} value={part.id}>{part.name}</option>) : this.state.assemblies.map((assembly, index) => <option key={index} value={assembly.id}>{assembly.name}</option>)}
                             </FormControl>
                         </FormGroup>
                         <div className="input-group">

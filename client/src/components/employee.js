@@ -38,6 +38,8 @@ class Employee extends React.Component {
       clock: 0,
       currentWorkOrder: {},
       modalShow: false,
+      showReviewModal: false,
+      partialQty: null,
       err: ''
     }
     Axios.get('/api/v1/stations/all')
@@ -103,6 +105,7 @@ class Employee extends React.Component {
   }
 
   handleJobFinish = event => {
+    alert('Here we go!')
     clearInterval(this.state.clockInterval);
 
     const currentWorkOrder = {}
@@ -127,7 +130,7 @@ class Employee extends React.Component {
               return;
             }
 
-            this.setState({ workOrders: result.data, modalShow: false, clock: 0 })
+            this.setState({ workOrders: result.data, modalShow: false, clock: 0, showReviewModal: false })
           })
           .catch(err => this.setState({ err }))
       })
@@ -136,32 +139,7 @@ class Employee extends React.Component {
 
   handleJobStop = (event) => {
     clearInterval(this.state.clockInterval);
-    const currentStation = {};
-    Object.assign(currentStation, this.state.currentWorkOrder.currentStation);
-    currentStation.time = this.state.clock;
-    Axios.put(`/api/v1/workorders/update/${this.state.currentWorkOrder.id}`, {
-      currentStation,
-      uid: sessionStorage.getItem('uid'),
-      username: sessionStorage.getItem('username')
-    })
-      .then(result => {
-        if (result.data.err) {
-          this.setState({ err: result.data.err })
-          return;
-        }
-
-        Axios.get(`/api/v1/workorders/active/${currentStation.id}`)
-          .then(result => {
-            if (result.data.err) {
-              this.setState({ err: result.data.err })
-              return;
-            }
-
-            this.setState({ workOrders: result.data, modalShow: false })
-          })
-          .catch(err => this.setState({ err }))
-      })
-      .catch(err => this.setState({ err }))
+    this.setState({modalShow: false, showReviewModal: true});
   }
 
   componentWillMount() {
@@ -189,6 +167,58 @@ class Employee extends React.Component {
       .then(url => window.open(url, '_blank'));
   }
 
+  handleInput = event =>{
+    const name = event.target.name;
+    const value = parseInt(event.target.value);
+    this.setState({[name]: value});
+  }
+
+  handlePartialCompletion = () => {
+    if(this.state.partialQty < 0 || this.state.partialQty > (parseInt(this.state.currentWorkOrder.quantity) - parseInt(this.state.currentWorkOrder.partialQty))){
+      alert(`Please choose a quantity between 0 and ${this.state.currentWorkOrder.quantity - this.state.currentWorkOrder.partialQty}`);
+      return;
+    }
+
+    if(this.state.partialQty === (parseInt(this.state.currentWorkOrder.quantity) - parseInt(this.state.partialQty))){
+      this.handleJobFinish();
+      return;
+    }
+
+      const currentStation = {};
+      Object.assign(currentStation, this.state.currentWorkOrder.currentStation);
+      currentStation.time = this.state.clock;
+      Axios.put(`/api/v1/workorders/update/${this.state.currentWorkOrder.id}`, {
+        currentStation,
+        uid: sessionStorage.getItem('uid'),
+        username: sessionStorage.getItem('username'),
+        partsCompleted: this.state.partialQty,
+        partialQty: parseInt(this.state.currentWorkOrder.partialQty) + parseInt(this.state.partialQty)
+      })
+        .then(result => {
+          if (result.data.err) {
+            this.setState({ err: result.data.err })
+            return;
+          }
+  
+          Axios.get(`/api/v1/workorders/active/${currentStation.id}`)
+            .then(result => {
+              if (result.data.err) {
+                this.setState({ err: result.data.err })
+                return;
+              }
+  
+              this.setState({ workOrders: result.data, modalShow: false, showReviewModal: false })
+            })
+            .catch(err => this.setState({ err }))
+        })
+        .catch(err => this.setState({ err }))
+  
+  }
+
+  handleSplit = () => {
+
+  }
+
   render() {
     if (!this.state.isLoggedIn) {
       return (
@@ -209,9 +239,10 @@ class Employee extends React.Component {
             <h2 style={{ color: 'red' }}>{this.state.err}</h2>
           </div>
           <div className="row">
-            {this.state.workOrders.map(workOrder => <WorkOrder key={workOrder.id} id={workOrder.id} handleJobStart={this.handleJobStart} text={workOrder.notes} title={workOrder.part.name} quantity={workOrder.quantity} />)}
+            {this.state.workOrders.map(workOrder => <WorkOrder key={workOrder.id} id={workOrder.id} handleJobStart={this.handleJobStart} text={workOrder.notes} title={workOrder.part.name} quantity={workOrder.quantity} qtyRemaining={(parseInt(workOrder.quantity)) - workOrder.partialQty} assemblyName={workOrder.assemblyName} />)}
           </div>
         </div>
+
 
         <Modal show={this.state.modalShow} >
           <Modal.Header >
@@ -226,6 +257,22 @@ class Employee extends React.Component {
             <button className="btn btn-danger" onClick={this.handleJobStop}>Stop</button>
             <button className="btn btn-success" onClick={this.handleJobFinish}>Finish Job</button>
           </Modal.Footer>
+        </Modal>
+
+
+        <Modal show={this.state.showReviewModal} >
+          <Modal.Header>
+            <Modal.Title>Work Review</Modal.Title>
+            <h3>Total Parts: {this.state.currentWorkOrder.quantity}</h3>
+              <div className="input-group">
+                <span className="input-group-addon" id="parts-completed-addon">Parts Completed</span>
+                <input className="form-control" type="number" id="parts-completed" aria-describedby="parts-completed-addon" name="partialQty" onChange={this.handleInput}></input>
+              </div>
+            <Modal.Footer>
+              <button className="btn btn-primary" onClick={this.handlePartialCompletion}>Done</button>
+              <button className="btn btn-danger" onClick={this.handleSplit}>Split</button>
+            </Modal.Footer>
+          </Modal.Header>
         </Modal>
 
       </div>
