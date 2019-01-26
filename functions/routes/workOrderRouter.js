@@ -12,7 +12,7 @@ function combineWorkorders() {
     const workOrders = [];
 
 
-    db.collection('work-orders').get()
+    db.collection('work-orders').where('isComplete', '==', false).get()
         .then(docs => {
             docs.forEach(doc => workOrders.push({ ...doc.data(), id: doc.id }));
             for (let i = 0; i < workOrders.length; i++) {
