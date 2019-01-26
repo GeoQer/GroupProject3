@@ -37,7 +37,6 @@ function combineWorkorders() {
                                 workOrders[i].history = [...workOrders[i].history, ...workOrders[j].history];
                                 workOrders[i].partialQty += workOrders[j].partialQty;
                                 Object.assign(updatedWorkOrder, workOrders[i]);
-                                console.log()
                             }
 
                             if (workOrders[i].parentWorkOrder === workOrders[j].id) {
@@ -272,9 +271,9 @@ router.post('/split', (req, res) => {
                     combineWorkorders();
                     res.json({ success: true })
                 })
-                .catch(err => console.log(err))
+                .catch(err => res.json({ err }))
         })
-        .catch(err => console.log(err))
+        .catch(err => res.json({ err }))
 })
 
 
