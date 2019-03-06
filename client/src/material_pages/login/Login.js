@@ -1,6 +1,5 @@
 import React from 'react';
 import Axios from 'axios';
-import M from 'materialize-css';
 
 export default class Login extends React.Component {
     constructor(props) {

@@ -3,6 +3,7 @@ import Axios from 'axios';
 import { Route, Link } from 'react-router-dom';
 import M from 'materialize-css';
 import Overview from './Overview';
+import Stations from './Stations';
 
 export default class Admin extends React.Component {
     constructor(props) {
@@ -78,6 +79,7 @@ export default class Admin extends React.Component {
                 </ul>
 
                 <Route exact path='/admin' component={Overview} />
+                <Route exact path="/admin/workstations" component={Stations} />
             </div>
         )
     }
