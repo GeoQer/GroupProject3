@@ -57,6 +57,7 @@ router.post('/verify', (req, res) => {
     try{
     verify.verifyIdToken(token)
         .then(code => res.json(code))
+        .catch(err => res.json({ err }))
     }
     catch(err){
         res.json(err);

@@ -43,7 +43,8 @@ class PartPage extends React.Component {
         this.state = {
             parts: [],
             interval: 0,
-            err: ''
+            err: '',
+            deleteTimout: null
         }
 
     }

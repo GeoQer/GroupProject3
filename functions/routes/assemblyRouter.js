@@ -4,7 +4,7 @@ const db = require('../resources/db');
 
 
 router.post('/create', (req, res) => {
-    if (req.body.id === 'New Part') {
+    if (req.body.id === '') {
         db.collection('assemblies').add({ ...req.body.assembly, isArchived: false })
             .then(doc => {
                 res.json({ success: true })
