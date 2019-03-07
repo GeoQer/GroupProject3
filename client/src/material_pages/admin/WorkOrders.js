@@ -47,7 +47,7 @@ export default class WorkOrders extends React.Component {
                     this.setState({ err: result.data.err })
                     return;
                 }
-                this.setState({ parts: result.data, part: result.data[0]})
+                this.setState({ parts: result.data })
             })
             .catch(err => this.setState({ err }))
     }
@@ -60,16 +60,39 @@ export default class WorkOrders extends React.Component {
 
     handleSelectChange = event => {
         const select = document.querySelector('select');
-        const instance = M.FormSelect.getInstance(select);
-        const value = JSON.parse(instance.getSelectedValues());
-        console.log(value);
+        const value = JSON.parse(select.value);
+        this.setState({ part: value }, () => console.log(this.state.part));
     }
 
-    handleSubmit = () => {
-        if (isNaN(this.state.quantity)) {
+    handleSubmit = event => {
+        event.preventDefault();
+        let part = this.state.part;
+
+        if (isNaN(this.state.quantity) || this.state.quantity < 1) {
             this.setState({ modalErr: 'Quantity must be a number.' })
             return;
         }
+
+        if (!this.state.part) {
+            part = this.state.parts[0];
+        }
+
+        Axios.post('/api/v1/workorders/create', {
+            job: {
+                part,
+                quantity: this.state.quantity,
+                notes: this.state.notes
+            }
+        })
+            .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err });
+                    return;
+                }
+                this.handleRefresh();
+                this.clear();
+                this.hideModal();
+            })
     }
 
     viewAttachment = filepath => {
@@ -157,10 +180,13 @@ export default class WorkOrders extends React.Component {
                                         <label htmlFor="textarea">Notes</label>
                                     </div>
                                 </div>
+                                <div className="row">
+                                    <button className="btn waves-effect waves-light blue" onClick={this.handleSubmit}>Create</button>
+                                </div>
                             </form>
                         </div>
                     </div>
-                    <div style={{ height: '30vh' }} />
+                    <div style={{ height: '15vh' }} />
                 </div>
             </div>
         )
