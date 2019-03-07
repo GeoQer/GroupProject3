@@ -1,6 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import { Modal } from 'react-bootstrap';
+import "./stations.css";
 
 class StationsPage extends React.Component {
     constructor(props) {
