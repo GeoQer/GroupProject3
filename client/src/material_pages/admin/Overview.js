@@ -39,7 +39,7 @@ const Table = props => (
                         <td>{wo.part.name}</td>
                         <td>{wo.quantity}</td>
                         <td>{wo.quantity - wo.partialQty}</td>
-                        <td><button className="btn waves-effect waves-light blue" onClick={() => props.handleHistory(wo)}>History</button></td>
+                        <td><button className="btn-flat blue-text white waves-effect waves-light blue" onClick={() => props.handleHistory(wo)}>History</button></td>
                     </tr>
                 )
             })}
@@ -141,31 +141,41 @@ export default class Overview extends React.Component {
                 }) : null}
 
                 <div id="modal" className="modal">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Station</th>
-                                <th>Employee</th>
-                                <th>Elapsed Time</th>
-                                <th>Parts Completed</th>
-                                <th>Total Elapsed Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.currentHistory ? this.state.currentHistory.map((data, index) => {
-                                sum += data.time;
-                                return (
-                                    <tr key={index}>
-                                        <td>{data.stationName}</td>
-                                        <td>{data.employeeName}</td>
-                                        <td>{formatTime(data.time)}</td>
-                                        <td>{data.partsCompleted}</td>
-                                        <td>{formatTime(sum)}</td>
-                                    </tr>
-                                )
-                            }) : null}
-                        </tbody>
-                    </table>
+                    <div className="container">
+                        <div className="row">
+                            <div style={{height: '12px'}} />
+                        </div>
+                        <div className="row">
+                            <h5>Part History</h5>
+                        </div>
+                        <div className="row">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Station</th>
+                                    <th>Employee</th>
+                                    <th>Elapsed Time</th>
+                                    <th>Parts Completed</th>
+                                    <th>Total Elapsed Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.currentHistory ? this.state.currentHistory.map((data, index) => {
+                                    sum += data.time;
+                                    return (
+                                        <tr key={index}>
+                                            <td>{data.stationName}</td>
+                                            <td>{data.employeeName}</td>
+                                            <td>{formatTime(data.time)}</td>
+                                            <td>{data.partsCompleted}</td>
+                                            <td>{formatTime(sum)}</td>
+                                        </tr>
+                                    )
+                                }) : null}
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         )

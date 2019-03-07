@@ -61,7 +61,6 @@ export default class Admin extends React.Component {
                             <li><Link to="/admin">Overview</Link></li>
                             <li><Link to="/admin/workstations">Work Stations</Link></li>
                             <li><Link to="/admin/parts">Parts</Link></li>
-                            <li><Link to="/admin/assemblies">Assemblies</Link></li>
                             <li><Link to="/admin/workorders">Work Orders</Link></li>
                             <li><Link to="/admin/employees">Employees</Link></li>
                         </ul>
@@ -74,7 +73,6 @@ export default class Admin extends React.Component {
                     <li><Link to="/admin">Overview</Link></li>
                     <li><Link to="/admin/workstations">Work Stations</Link></li>
                     <li><Link to="/admin/parts">Parts</Link></li>
-                    <li><Link to="/admin/assemblies">Assemblies</Link></li>
                     <li><Link to="/admin/workorders">Work Orders</Link></li>
                     <li><Link to="/admin/employees">Employees</Link></li>
                 </ul>

@@ -100,12 +100,12 @@ export default class Parts extends React.Component {
     handleSubmit = event => {
         event.preventDefault();
 
-        if (this.state.newPartStations.length < 1) {
+        if (!this.state.newPartStations || this.state.newPartStations.length < 1) {
             this.setState({ errModal: 'Please select a minimum of one station' });
             return;
         }
 
-        if (this.state.name.length < 4) {
+        if (!this.state.name || this.state.name.length < 4) {
             this.setState({ errModal: 'Part Names must be at least 4 letters long' });
             return;
         }
@@ -155,6 +155,9 @@ export default class Parts extends React.Component {
         }
 
         this.handleRefresh();
+        const modal = document.getElementById('modal');
+        const instance = M.Modal.getInstance(modal);
+        instance.close();
     }
 
     viewAttachment = filepath => {
@@ -194,6 +197,12 @@ export default class Parts extends React.Component {
                 </div>
                 <div id="modal" className="modal">
                     <div className="container" style={{ minHeight: '60vh' }}>
+                        <div className="row">
+                            <div style={{height: '12px'}} />
+                        </div>
+                        <div className="row">
+                            <h4 className="red-text">{this.state.errModal ? this.state.errModal : null}</h4>
+                        </div>
                         <div className="row">
                             <h4>Create New Part</h4>
                         </div>
