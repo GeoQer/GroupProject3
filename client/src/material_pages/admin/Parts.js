@@ -155,6 +155,7 @@ export default class Parts extends React.Component {
         }
 
         this.handleRefresh();
+        this.clear();
         const modal = document.getElementById('modal');
         const instance = M.Modal.getInstance(modal);
         instance.close();
@@ -163,6 +164,16 @@ export default class Parts extends React.Component {
     viewAttachment = filepath => {
         firebase.storage().ref(filepath).getDownloadURL()
             .then(url => window.open(url, '_blank'));
+    }
+
+    clear = () => {
+        const inputs = document.querySelectorAll('input[type=text]');
+        inputs.forEach(input => input.value = '');
+        const checkboxes = document.querySelectorAll('input[type=checkbox]');
+        checkboxes.forEach(box => {
+            if(box.checked === true)
+                box.click();
+        });
     }
 
     render() {

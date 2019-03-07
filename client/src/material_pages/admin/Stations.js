@@ -76,6 +76,9 @@ export default class Stations extends React.Component {
                 this.handleRefresh();
             })
             .catch(err => this.setState({ err }))
+
+        this.clear();
+        this.hideModal();
     }
 
     showModal = event => {
@@ -83,6 +86,16 @@ export default class Stations extends React.Component {
         const modal = document.getElementById('modal');
         const instance = M.Modal.getInstance(modal);
         instance.open();
+    }
+
+    hideModal = () => {
+        const modal = document.getElementById('modal');
+        const instance = M.Modal.getInstance(modal);
+        instance.close();
+    }
+
+    clear = () => {
+        this.setState({ name: '' });
     }
 
     render() {
@@ -109,7 +122,7 @@ export default class Stations extends React.Component {
                                 return (
                                     <tr key={index}>
                                         <td>{station.name}</td>
-                                        <td><button className="btn waves-effect waves-light red-text btn-flat white" onClick={() => this.handleStationDelete(station.id)}>Delete</button></td>
+                                        <td><button className="btn waves-effect waves-light red-text btn-flat grey lighten-5" onClick={() => this.handleStationDelete(station.id)}>Delete</button></td>
                                     </tr>
                                 )
                             }) : null}

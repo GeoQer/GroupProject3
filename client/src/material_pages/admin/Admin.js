@@ -5,6 +5,7 @@ import M from 'materialize-css';
 import Overview from './Overview';
 import Stations from './Stations';
 import Parts from './Parts';
+import Employees from './Employees';
 
 export default class Admin extends React.Component {
     constructor(props) {
@@ -80,6 +81,7 @@ export default class Admin extends React.Component {
                 <Route exact path='/admin' component={Overview} />
                 <Route exact path="/admin/workstations" component={Stations} />
                 <Route exact path="/admin/parts" component={Parts} />
+                <Route exact path="/admin/employees" component={Employees} />
             </div>
         )
     }

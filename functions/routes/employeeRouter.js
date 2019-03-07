@@ -36,8 +36,8 @@ router.put('/togglepermission', (req, res) => {
     if (!req.body.id) {
         res.json({ err: 'Please provide a valid employee id' });
     }
-    else if (req.body.isAdmin != "true" && req.body.isAdmin != "false") {
-        res.json({ err: 'Please provide an "isAdmin" parameter with a boolean data type' })
+    else if (req.body.isAdmin != true && req.body.isAdmin != false) {
+        res.json({ err: {message: 'Please provide an "isAdmin" parameter with a boolean data type'} })
     }
     else {
         db.collection('users').doc(req.body.id).get()
@@ -47,7 +47,7 @@ router.put('/togglepermission', (req, res) => {
                     return;
                 }
 
-                db.collection('users').doc(req.body.id).set({ isAdmin: (req.body.isAdmin === 'true' ? false : true) }, { merge: true })
+                db.collection('users').doc(req.body.id).set({ isAdmin: (req.body.isAdmin ? false : true) }, { merge: true })
                 .then(() => res.json({ success: true }))
                 .catch(err => 
                     res.json({ err }));

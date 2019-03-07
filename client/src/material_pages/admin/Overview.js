@@ -39,7 +39,7 @@ const Table = props => (
                         <td>{wo.part.name}</td>
                         <td>{wo.quantity}</td>
                         <td>{wo.quantity - wo.partialQty}</td>
-                        <td><button className="btn-flat blue-text white waves-effect waves-light blue" onClick={() => props.handleHistory(wo)}>History</button></td>
+                        <td><button className="btn-flat blue-text grey lighten-5 waves-effect waves-light blue" onClick={() => props.handleHistory(wo)}>History</button></td>
                     </tr>
                 )
             })}
