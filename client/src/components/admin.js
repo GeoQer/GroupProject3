@@ -69,7 +69,7 @@ class Admin extends React.Component {
     }
     else {
       return (
-        <div>
+        <div className='e'>
           <AdminBar stations={this.state.stations} handleStationSelect={this.handleStationSelect} />
           <h2 style={{color: 'red'}}>{this.state.err}</h2>
         </div>
