@@ -5,6 +5,7 @@ import M from 'materialize-css';
 import Overview from './Overview';
 import Stations from './Stations';
 import Parts from './Parts';
+import WorkOrders from './WorkOrders';
 import Employees from './Employees';
 
 export default class Admin extends React.Component {
@@ -15,6 +16,7 @@ export default class Admin extends React.Component {
             err: null
         }
     }
+
 
     componentWillMount = () => {
         if (!this.state.isLoadedData) {
@@ -81,6 +83,7 @@ export default class Admin extends React.Component {
                 <Route exact path='/admin' component={Overview} />
                 <Route exact path="/admin/workstations" component={Stations} />
                 <Route exact path="/admin/parts" component={Parts} />
+                <Route exact path="/admin/workorders" component={WorkOrders} />
                 <Route exact path="/admin/employees" component={Employees} />
             </div>
         )
