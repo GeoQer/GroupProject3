@@ -7,7 +7,7 @@ export default class Stations extends React.Component {
         super(props);
         this.state = {
             stations: null,
-            name: null,
+            name: '',
             err: null,
             modalErr: null
         }
@@ -78,7 +78,8 @@ export default class Stations extends React.Component {
             .catch(err => this.setState({ err }))
     }
 
-    showModal = () => {
+    showModal = event => {
+        event.preventDefault();
         const modal = document.getElementById('modal');
         const instance = M.Modal.getInstance(modal);
         instance.open();
@@ -87,6 +88,11 @@ export default class Stations extends React.Component {
     render() {
         return (
             <div className="container">
+                <div className="row">
+                    <div className="fixed-action-btn right">
+                        <a href="/" className="btn-floating blue waves-effect waves-light" onClick={this.showModal}><i className="material-icons">add</i></a>
+                    </div>
+                </div>
                 <div className="row">
                     <h4 className="red-text">{this.state.err ? this.state.err.message : null}</h4>
                 </div>
@@ -103,15 +109,12 @@ export default class Stations extends React.Component {
                                 return (
                                     <tr key={index}>
                                         <td>{station.name}</td>
-                                        <td><button className="btn waves-effect waves-light red" onClick={() => this.handleStationDelete(station.id)}>Delete</button></td>
+                                        <td><button className="btn waves-effect waves-light red-text btn-flat white" onClick={() => this.handleStationDelete(station.id)}>Delete</button></td>
                                     </tr>
                                 )
                             }) : null}
                         </tbody>
                     </table>
-                </div>
-                <div className="row">
-                    <button className="btn waves-effect waves-light" onClick={this.showModal}>Create New Station</button>
                 </div>
                 <div className="modal" id="modal">
                     <div className="modal-content">
@@ -125,7 +128,7 @@ export default class Stations extends React.Component {
                             </div>
                             <div className="row">
                                 <div className="input-field">
-                                    <button className="btn waves-effect waves-light" onClick={this.handleSubmit}>Create</button>
+                                    <button className="btn waves-effect waves-light blue" onClick={this.handleSubmit}>Create</button>
                                 </div>
                             </div>
                             <div className="row">
