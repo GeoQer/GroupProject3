@@ -52,6 +52,7 @@ export default class Login extends React.Component {
             .then(result => {
                 if (result.data.err) {
                     this.setState({ err: result.data.err });
+                    sessionStorage.clear();
                     return;
                 }
 

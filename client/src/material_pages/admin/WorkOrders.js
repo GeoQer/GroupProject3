@@ -12,7 +12,7 @@ export default class WorkOrders extends React.Component {
             workOrders: null,
             parts: null,
             part: null,
-            quantity: '',
+            quantity: undefined,
             notes: '',
             err: null,
             modalErr: null,
@@ -67,8 +67,9 @@ export default class WorkOrders extends React.Component {
     handleSubmit = event => {
         event.preventDefault();
         let part = this.state.part;
+        const quantity = parseInt(this.state.quantity);
 
-        if (isNaN(this.state.quantity) || this.state.quantity < 1) {
+        if (isNaN(quantity) || quantity < 1) {
             this.setState({ modalErr: 'Quantity must be a number.' })
             return;
         }
@@ -80,7 +81,7 @@ export default class WorkOrders extends React.Component {
         Axios.post('/api/v1/workorders/create', {
             job: {
                 part,
-                quantity: this.state.quantity,
+                quantity,
                 notes: this.state.notes
             }
         })
@@ -113,7 +114,7 @@ export default class WorkOrders extends React.Component {
     }
 
     clear = () => {
-        this.setState({ err: null, modalErr: null, quantity: '', notes: '' });
+        this.setState({ err: null, modalErr: null, quantity: undefined, notes: '' });
     }
 
     render() {

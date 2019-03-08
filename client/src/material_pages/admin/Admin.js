@@ -22,6 +22,7 @@ export default class Admin extends React.Component {
         if (!this.state.isLoadedData) {
             const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
             if (!userInfo) {
+                this.props.history.replace('/');
                 return;
             }
             Axios.post('/api/v1/auth/verify', {
@@ -32,7 +33,6 @@ export default class Admin extends React.Component {
                         this.setState({ err: result.data.err, isLoadedData: true });
                         return;
                     }
-
                     this.setState({ isLoggedIn: true, isAdmin: userInfo.isAdmin, username: userInfo.name })
                 })
                 .catch(err => this.setState({ err, isLoggedIn: true }))
@@ -42,6 +42,13 @@ export default class Admin extends React.Component {
     componentDidUpdate = () => {
         let elem = document.querySelector('#slide-out');
         M.Sidenav.init(elem, { draggable: true });
+    }
+
+    logout = () => {
+        Axios.post('api/v1/auth/logout')
+            .then(result => {
+                sessionStorage.clear();
+            })
     }
 
     render() {
@@ -66,6 +73,8 @@ export default class Admin extends React.Component {
                             <li><Link to="/admin/parts">Parts</Link></li>
                             <li><Link to="/admin/workorders">Work Orders</Link></li>
                             <li><Link to="/admin/employees">Employees</Link></li>
+                            <li><Link to="/employee">Go to Employee Page</Link></li>
+                            <li><Link to="/" onClick={this.logout}>Logout</Link></li>
                         </ul>
                     </div>
                 </nav>
@@ -78,6 +87,8 @@ export default class Admin extends React.Component {
                     <li><Link to="/admin/parts">Parts</Link></li>
                     <li><Link to="/admin/workorders">Work Orders</Link></li>
                     <li><Link to="/admin/employees">Employees</Link></li>
+                    <li><Link to="/employee">Go to Employee Page</Link></li>
+                    <li><Link to="/" onClick={this.logout}>Logout</Link></li>
                 </ul>
 
                 <Route exact path='/admin' component={Overview} />
