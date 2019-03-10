@@ -2,6 +2,8 @@ import React from 'react';
 import Axios from 'axios';
 import M from 'materialize-css';
 import { Link } from 'react-router-dom';
+import firebase from 'firebase/app';
+import 'firebase/storage';
 
 function displayTime(time) {
     let hours = 0, minutes = 0, seconds = 0;
@@ -21,6 +23,49 @@ function displayTime(time) {
     return `${hours}:${minutes}:${seconds}`;
 }
 
+const WorkingModal = props => (
+    <div className="container">
+        <div className="row">
+            <h5 className="left">{props.workOrder.part.name}</h5>
+            <h3 className="right">{displayTime(props.time)}</h3>
+        </div>
+        <div className="row">
+            <h5>Order Quantity: {props.workOrder.quantity}</h5>
+            <h5>Remaining: {props.workOrder.quantity - props.workOrder.partialQty}</h5>
+        </div>
+        <div className="row">
+            <h5 className="red-text">{props.modalErr}</h5>
+        </div>
+        <div className="row">
+            <hr />
+            <button className="btn-flat blue-text waves-effect waves-light" onClick={() => props.viewAttachment(`${props.workOrder.part.id}/${props.workOrder.part.filename}`)}>Attachment</button>
+            <button className="btn-flat red-text waves-effect waves-light right" onClick={props.handleStop}>Stop</button>
+            <button className="btn-flat green-text waves-effect waves-light right" onClick={props.handleFinish}>Finish</button>
+        </div>
+    </div>
+)
+
+const ReviewModal = props => (
+    <div className="container">
+        <div className="row">
+            <h5 className="left">{props.workOrder.part.name}</h5>
+            <h3 className="right">{displayTime(props.time)}</h3>
+        </div>
+        <div className="row">
+            <h5>How many parts did you complete?</h5>
+            <div className="input-field">
+                <input type="text" name="partsCompleted" onChange={props.handleTextChange} value={props.partsCompleted} />
+                <label htmlFor="partsCompleted">Parts completed</label>
+            </div>
+            <div className="row">
+                <h6 className="red-text left">{props.modalErr}</h6>
+                <button className="btn-flat blue-text waves-effect waves-light right" onClick={props.handleReview}>Done</button>
+            </div>
+        </div>
+    </div>
+)
+
+
 export default class Employee extends React.Component {
     constructor(props) {
         super(props);
@@ -30,12 +75,18 @@ export default class Employee extends React.Component {
             selectedStation: null,
             workOrders: null,
             sortedWorkOrders: null,
-            selectedWorkOrder: null,
+            selectedWorkOrder: {
+                part: { name: 'work order not loaded' },
+                quantity: 'work order not loaded',
+                partialQty: 'work order not loaded'
+            },
             err: null,
             modalErr: null,
             counter: 0,
             timer: null,
-            userInfo: null
+            userInfo: null,
+            reviewing: false,
+            partsCompleted: '',
         }
     }
 
@@ -51,6 +102,8 @@ export default class Employee extends React.Component {
             return;
 
         const stationID = document.querySelector('select').value;
+
+        this.state.stations.forEach(station => { if (station.id === stationID) this.setState({ selectedStation: station }); })
 
         const sortedWorkOrders = [];
 
@@ -73,9 +126,9 @@ export default class Employee extends React.Component {
     componentDidMount = () => {
         this.handleRefresh();
         const sidenav = document.getElementById('slide-out');
-        const modals = document.querySelectorAll('.modal');
         M.Sidenav.init(sidenav);
-        M.Modal.init(modals);
+        const modal = document.getElementById('modal');
+        M.Modal.init(modal, { dismissible: false });
     }
 
     componentDidUpdate = () => {
@@ -106,6 +159,66 @@ export default class Employee extends React.Component {
         this.sortWorkOrders();
     }
 
+    handleReview = () => {
+        const partsCompleted = parseInt(this.state.partsCompleted);
+        if (partsCompleted === null || isNaN(partsCompleted)) {
+            this.setState({ modalErr: 'Parts Completed must be a number' });
+            return;
+        }
+        else if (partsCompleted > (this.state.selectedWorkOrder.quantity - this.state.selectedWorkOrder.partialQty) || partsCompleted < 0) {
+            this.setState({ modalErr: `Parts Completed must be between 0 and ${this.state.selectedWorkOrder.quantity - this.state.selectedWorkOrder.partialQty}` });
+            return;
+        }
+
+        if (partsCompleted === (parseInt(this.state.selectedWorkOrder.quantity) - parseInt(this.state.selectedWorkOrder.partialQty))) {
+            this.handleFinish();
+            return;
+        }
+
+        const currentStation = Object.assign(this.state.selectedStation);
+        currentStation.time = this.state.counter;
+
+        Axios.put(`/api/v1/workorders/update/${this.state.selectedWorkOrder.id}`, {
+            currentStation,
+            uid: this.state.userInfo.uid,
+            username: this.state.userInfo.name,
+            partsCompleted,
+            partialQty: parseInt(this.state.selectedWorkOrder.partialQty) + partsCompleted
+        })
+            .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err })
+                    return;
+                }
+                this.handleRefresh();
+                this.hideModal();
+                this.setState({ reviewing: false, modalErr: null, partsCompleted: '' });
+            })
+    }
+
+    handleFinish = () => {
+        clearInterval(this.state.timer);
+        const currentWorkOrder = Object.assign(this.state.selectedWorkOrder);
+        currentWorkOrder.currentStation.time = this.state.counter;
+
+        Axios.put(`api/v1/workorders/next`, {
+            currentWorkOrder,
+            uid: this.state.userInfo.uid,
+            username: this.state.userInfo.name,
+            partsCompleted: parseInt(this.state.partsCompleted)
+        })
+            .then(result => {
+                if (result.data.err) {
+                    this.setState({ err: result.data.err });
+                    return;
+                }
+
+                this.handleRefresh();
+                this.hideModal();
+                this.setState({ reviewing: false, modalErr: null, partsCompleted: '' });
+            })
+    }
+
     handleStart = wo => {
         this.setState({ selectedWorkOrder: wo });
         this.showModal();
@@ -119,8 +232,7 @@ export default class Employee extends React.Component {
 
     handleStop = () => {
         clearInterval(this.state.timer);
-        this.hideModal();
-        this.toggleModal();
+        this.setState({ reviewing: true, modalErr: null });
     }
 
     handlePut = () => {
@@ -144,18 +256,31 @@ export default class Employee extends React.Component {
         instance.close();
     }
 
-    toggleModal = () => {
-        this.hideModal();
-        const inputModal = document.getElementById('inputModal');
-        const instance = M.Modal.getInstance(inputModal);
-        instance.open();
+    handleTextChange = event => {
+        const name = event.target.name;
+        const value = event.target.value;
+        let modalErr = null;
+
+        if (!value || isNaN(value)) {
+            modalErr = 'Parts Completed must be a number';
+        }
+        else if (value > (this.state.selectedWorkOrder.quantity - this.state.selectedWorkOrder.partialQty) || value < 0) {
+            modalErr = `Parts Completed must be between 0 and ${this.state.selectedWorkOrder.quantity - this.state.selectedWorkOrder.partialQty}`;
+        }
+
+        this.setState({ [name]: value, modalErr });
+    }
+
+    viewAttachment = filepath => {
+        firebase.storage().ref(filepath).getDownloadURL()
+            .then(url => window.open(url, '_blank'));
     }
 
     render() {
         return (
             <div>
                 <nav>
-                    <div className="nav-wrapper grey darken-3">
+                    <div className="nav-wrapper teal darken-4">
                         <Link to="/employee" className="brand-logo">{this.state.username}</Link>
                         <a href="/" data-target="slide-out" className="sidenav-trigger"><i className="material-icons">menu</i></a>
                         <ul id="navbar" className="right hide-on-med-and-down">
@@ -204,36 +329,14 @@ export default class Employee extends React.Component {
                         }) : null}
                     </div>
                     <div id="modal" className="modal">
-                        <div className="container">
-                            <div className="row">
-                                <h5 className="red-text">{this.state.modalErr ? this.state.modalErr : null}</h5>
-                            </div>
-                            <div className="row">
-                                <h5>{this.state.selectedWorkOrder ? this.state.selectedWorkOrder.part.name : null}</h5>
-                            </div>
-                            <div className="row">
-                                <h6>{displayTime(this.state.counter)}</h6>
-                            </div>
-                            <div className="row">
-                                <hr />
-                                <button className="btn-flat red-text" onClick={this.handleStop}>Stop</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="inputModal" className="modal">
-                        <div className="container">
-                            <div className="row">
-                                <h5>Work Review</h5>
-                            </div>
-                            <div className="row">
-                                <div className="input-field">
-                                    <input type="text"></input>
-                                </div>
-                            </div>
-                        </div>
+                        {this.state.reviewing ?
+                            <ReviewModal workOrder={this.state.selectedWorkOrder} time={this.state.counter} modalErr={this.state.modalErr} handleTextChange={this.handleTextChange} handleReview={this.handleReview} partsCompleted={this.state.partsCompleted} />
+                            :
+                            <WorkingModal workOrder={this.state.selectedWorkOrder} time={this.state.counter} modalErr={this.state.modalErr} handleStop={this.handleStop} viewAttachment={this.viewAttachment} handleFinish={this.handleFinish} />
+                        }
                     </div>
                 </div>
-            </div >
+            </div>
         )
     }
 }
