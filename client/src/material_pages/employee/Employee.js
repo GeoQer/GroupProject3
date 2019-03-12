@@ -108,8 +108,9 @@ export default class Employee extends React.Component {
         const sortedWorkOrders = [];
 
         this.state.workOrders.forEach(wo => {
-            if (wo.currentStation.id === stationID)
+            if (wo.currentStation.id === stationID) {
                 sortedWorkOrders.push(wo);
+            }
         })
         this.setState({ sortedWorkOrders });
     }

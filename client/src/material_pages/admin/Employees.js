@@ -42,7 +42,7 @@ export default class Employees extends React.Component {
                         count++;
                 })
                 if (count <= 1) {
-                    throw new Error({ message: 'There must always be at least one user with Administrator privileges.' });
+                    throw new Error({ err: { message: 'There must always be at least one user with Administrator privileges.' } });
                 }
             }
 
@@ -57,7 +57,7 @@ export default class Employees extends React.Component {
                     }
                     this.handleRefresh();
                 })
-                .catch(err => this.setState({ err }));
+                .catch(err => this.setState({ err: { message: 'There must always be at least one user with Administrator privileges.' } }));
         }
         catch (err) {
             this.setState({ err })

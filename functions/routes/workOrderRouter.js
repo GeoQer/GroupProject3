@@ -5,6 +5,7 @@ const firebase = require('firebase/app');
 require('firebase/firestore');
 
 function combineWorkorders() {
+    return;
     let hit = false;
     let deleteID = null;
     let updateID = null;
